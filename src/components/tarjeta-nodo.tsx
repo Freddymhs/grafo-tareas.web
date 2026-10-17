@@ -1,12 +1,13 @@
 import Link from "next/link";
 import type { NodoResponseDto, NodoResumenDto } from "@/lib/api/generado/modelos";
-import { PRIORIDAD_VISIBLE_MAXIMA } from "@/lib/constants";
+import { PRIORIDAD_VISIBLE_MAXIMA, TIPOS_TABLERO } from "@/lib/constants";
 
 type Nodo = NodoResumenDto | NodoResponseDto;
 
 const tieneTablero = (nodo: Nodo): nodo is NodoResponseDto => "etiquetas" in nodo;
+const [, FASE] = TIPOS_TABLERO;
 
-/** Una tarea como tarjeta: título, etiquetas, prioridad y fecha. Es la unidad del tablero, de "hoy puedo" y de las ramas. */
+/** Una tarea (o FASE, marcada) como tarjeta: título, etiquetas, prioridad y fecha. Es la unidad del tablero, de "hoy puedo" y de las ramas. */
 export function TarjetaNodo({ nodo }: { nodo: Nodo }) {
   const cerrado = nodo.estado === "CERRADO";
   const detalle = tieneTablero(nodo) ? nodo : null;
@@ -22,7 +23,14 @@ export function TarjetaNodo({ nodo }: { nodo: Nodo }) {
         cerrado ? "opacity-50 line-through" : ""
       }`}
     >
-      <p className="font-medium text-gray-900 [overflow-wrap:anywhere]">{nodo.titulo}</p>
+      <p className="font-medium text-gray-900 [overflow-wrap:anywhere]">
+        {nodo.tipo === FASE ? (
+          <span className="mr-1.5 rounded bg-indigo-100 px-1.5 py-0.5 text-xs font-semibold text-indigo-700">
+            FASE
+          </span>
+        ) : null}{" "}
+        {nodo.titulo}
+      </p>
       {detalle ? (
         <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-gray-500">
           {prioridadVisible ? (

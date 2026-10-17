@@ -35,5 +35,7 @@ export * from "./paginaNodosDto";
 export * from "./posicionNodoDto";
 export * from "./ramaResponseDto";
 export * from "./ramaResponseDtoEstado";
+export * from "./rolesResponseDto";
+export * from "./rolResponseDto";
 export * from "./updateNodoDto";
 export * from "./updateNodoDtoEstado";

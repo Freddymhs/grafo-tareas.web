@@ -14,7 +14,9 @@ import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
 import { ConexionesNodo } from "@/components/conexiones-nodo";
 import { Descripcion } from "@/components/descripcion";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
-import { ESTILO_BOTON, ESTILO_CAMPO, ETAPA_ENTRADA } from "@/lib/constants";
+import { ESTILO_BOTON, ESTILO_CAMPO, ETAPA_ENTRADA, TIPOS_TABLERO } from "@/lib/constants";
+
+const [, FASE] = TIPOS_TABLERO;
 
 export function NodoDetalle({ id }: { id: string }) {
   const nodo = useNodosControllerFindOne(id);
@@ -28,6 +30,8 @@ export function NodoDetalle({ id }: { id: string }) {
   if (nodo.isError) return <p className="text-red-600">No existe ese nodo o la API no responde.</p>;
   const n = nodo.data;
   const cerrado = n.estado === UpdateNodoDtoEstado.CERRADO;
+  // D10: la FASE se mueve tildando su FASE_n.md (el hook y `importar:fases`); acá solo se ve y se conecta.
+  const soloLectura = n.tipo === FASE;
   const porQue = bloqueado.data?.por ?? [];
   const liberados = [...(libera.data?.directos ?? []), ...(libera.data?.cadena ?? [])];
 
@@ -49,44 +53,53 @@ export function NodoDetalle({ id }: { id: string }) {
             ))}
           </div>
         ) : null}
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <select
-            value={n.etapa ?? ETAPA_ENTRADA}
-            onChange={(evento) =>
-              actualizar.mutate({
-                id,
-                data: { etapa: evento.target.value === ETAPA_ENTRADA ? null : evento.target.value },
-              })
-            }
-            disabled={actualizar.isPending || !etapas.isSuccess}
-            aria-label="Etapa"
-            className={ESTILO_CAMPO}
-          >
-            {[ETAPA_ENTRADA, ...(etapas.data ?? [])].map((etapa) => (
-              <option key={etapa} value={etapa}>
-                {etapa}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            disabled={actualizar.isPending}
-            onClick={() =>
-              actualizar.mutate({
-                id,
-                data: {
-                  estado: cerrado ? UpdateNodoDtoEstado.ABIERTO : UpdateNodoDtoEstado.CERRADO,
-                },
-              })
-            }
-            className={ESTILO_BOTON}
-          >
-            {cerrado ? "Reabrir" : "Cerrar"}
-          </button>
-          {actualizar.isError ? (
-            <p className="text-sm text-red-600">{actualizar.error.message}</p>
-          ) : null}
-        </div>
+        {soloLectura ? (
+          <p className="mt-3 text-sm text-gray-500">
+            Una FASE se mueve tildando su FASE_n.md: el hook la mueve acá y `importar:fases` la
+            corrige.
+          </p>
+        ) : (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <select
+              value={n.etapa ?? ETAPA_ENTRADA}
+              onChange={(evento) =>
+                actualizar.mutate({
+                  id,
+                  data: {
+                    etapa: evento.target.value === ETAPA_ENTRADA ? null : evento.target.value,
+                  },
+                })
+              }
+              disabled={actualizar.isPending || !etapas.isSuccess}
+              aria-label="Etapa"
+              className={ESTILO_CAMPO}
+            >
+              {[ETAPA_ENTRADA, ...(etapas.data ?? [])].map((etapa) => (
+                <option key={etapa} value={etapa}>
+                  {etapa}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              disabled={actualizar.isPending}
+              onClick={() =>
+                actualizar.mutate({
+                  id,
+                  data: {
+                    estado: cerrado ? UpdateNodoDtoEstado.ABIERTO : UpdateNodoDtoEstado.CERRADO,
+                  },
+                })
+              }
+              className={ESTILO_BOTON}
+            >
+              {cerrado ? "Reabrir" : "Cerrar"}
+            </button>
+            {actualizar.isError ? (
+              <p className="text-sm text-red-600">{actualizar.error.message}</p>
+            ) : null}
+          </div>
+        )}
       </header>
 
       {bloqueado.data?.bloqueado ? (

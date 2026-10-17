@@ -13,6 +13,13 @@ export const LIMITE_TABLERO = 500;
 /** La columna de lo que no tiene etapa: en Todoist, las 42 tareas "sin sección" son la bandeja de entrada. */
 export const ETAPA_ENTRADA = "Entrada";
 
+/** El tablero por rol (FASE 8): «Todo» junta a todos; en el de un rol, lo que está en una etapa ajena va a «Otras etapas». */
+export const ROL_TODO = "todo";
+export const NOMBRE_ROL_TODO = "Todo";
+export const ETAPA_OTRAS = "Otras etapas";
+/** El tablero muestra tareas y FASE; las FASE se ven pero se mueven desde su FASE_n.md (D10). */
+export const TIPOS_TABLERO = [CreateNodoDtoTipo.TAREA, CreateNodoDtoTipo.FASE] as const;
+
 /** Prioridad 1 y 2 son las que Freddy usa (p1 12, p2 33 de 134); 3 y 4 no se muestran. */
 export const PRIORIDAD_VISIBLE_MAXIMA = 2;
 

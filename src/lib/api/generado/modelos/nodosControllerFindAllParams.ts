@@ -26,6 +26,10 @@ export type NodosControllerFindAllParams = {
   etapa?: string;
   etiqueta?: string;
   /**
+   * Solo los nodos de este rol (GET /roles): llevan su etiqueta; los del defecto, la de ningún otro
+   */
+  rol?: string;
+  /**
    * Solo los nodos que PERTENECEN_A esta rama
    */
   rama?: string;

@@ -65,7 +65,7 @@ export const getNodosControllerFindAllUrl = (params?: NodosControllerFindAllPara
 };
 
 /**
- * @summary Listar nodos: por tipo, estado, etapa, etiqueta, rama o texto
+ * @summary Listar nodos: por tipo, estado, etapa, etiqueta, rol, rama o texto
  */
 export const nodosControllerFindAll = async (
   params?: NodosControllerFindAllParams,
@@ -168,7 +168,7 @@ export function useNodosControllerFindAll<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Listar nodos: por tipo, estado, etapa, etiqueta, rama o texto
+ * @summary Listar nodos: por tipo, estado, etapa, etiqueta, rol, rama o texto
  */
 
 export function useNodosControllerFindAll<
