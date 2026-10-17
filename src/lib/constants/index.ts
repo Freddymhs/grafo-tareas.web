@@ -1,10 +1,10 @@
+import { CreateConexionDtoTipo, CreateNodoDtoTipo } from "@/lib/api/generado/modelos";
+
 export const APP_NAME = "grafo-tareas";
 
 /** La API del grafo (grafo-tareas.api). En producción, la URL por Tailscale. */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
-export const DEFAULT_PAGE = 1;
-export const DEFAULT_LIMIT = 10;
 export const STALE_TIME_MS = 60_000;
 
 /** El tablero y las ramas piden todo lo abierto de una vez: hoy son ~100 tareas, el tope de la API es 500. */
@@ -22,3 +22,36 @@ export const NAVEGACION = [
   { href: "/bloqueos", titulo: "Bloqueos" },
   { href: "/ramas", titulo: "Ramas" },
 ] as const;
+
+/** Los tipos del dominio vienen del OpenAPI (una sola fuente); la TAREA es lo que se crea a diario. */
+export const TIPOS_NODO = Object.values(CreateNodoDtoTipo);
+export const TIPO_NODO_POR_DEFECTO = CreateNodoDtoTipo.TAREA;
+export const PRIORIDADES = [1, 2, 3, 4] as const;
+
+/** Cómo se lee cada conexión, siempre desde el origen: "X depende de Y". */
+export const TEXTO_CONEXION: Record<CreateConexionDtoTipo, string> = {
+  DEPENDE_DE: "depende de",
+  ESPERA_RESPUESTA_DE: "espera respuesta de",
+  BLOQUEADA_POR: "bloqueada por",
+  PERTENECE_A: "pertenece a",
+  EN_DAILY_DE: "en el daily de",
+};
+export const TIPO_CONEXION_POR_DEFECTO = CreateConexionDtoTipo.DEPENDE_DE;
+
+/** Buscador para conectar: desde 2 letras, hasta 20 resultados. */
+export const LARGO_MINIMO_BUSQUEDA = 2;
+export const LIMITE_BUSQUEDA = 20;
+
+/** PWA: color de la barra del sistema y nombre de la caché del service worker para las lecturas de la API. */
+export const COLOR_TEMA = "#111827";
+export const COLOR_FONDO = "#ffffff";
+export const NOMBRE_CACHE_API = "api-grafo";
+/** Si la API no contesta en este tiempo, se sirve lo último leído (offline de lectura). */
+export const SEGUNDOS_ESPERA_RED = 3;
+export const ENTRADAS_CACHE_API = 200;
+export const RUTA_OFFLINE = "/~offline";
+
+/** Los controles de formulario de la app: un campo y un botón primario, iguales en todas las vistas. */
+export const ESTILO_CAMPO = "rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm";
+export const ESTILO_BOTON =
+  "rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50";

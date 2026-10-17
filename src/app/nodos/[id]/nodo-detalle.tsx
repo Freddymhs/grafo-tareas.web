@@ -1,44 +1,33 @@
 "use client";
 
-import Link from "next/link";
-import { useConexionesControllerFindAll } from "@/lib/api/generado/conexiones/conexiones";
 import {
   useDerivadoControllerBloqueado,
   useDerivadoControllerLibera,
 } from "@/lib/api/generado/derivado/derivado";
-import { useNodosControllerFindOne } from "@/lib/api/generado/nodos/nodos";
+import { useEtapasControllerLista } from "@/lib/api/generado/etapas/etapas";
+import {
+  useNodosControllerFindOne,
+  useNodosControllerUpdate,
+} from "@/lib/api/generado/nodos/nodos";
+import { UpdateNodoDtoEstado } from "@/lib/api/generado/modelos";
+import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
+import { ConexionesNodo } from "@/components/conexiones-nodo";
+import { Descripcion } from "@/components/descripcion";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
-import { ETAPA_ENTRADA } from "@/lib/constants";
-
-/** Las subtareas de Todoist entraron como "el padre DEPENDE_DE las hijas" (D3): se listan acá como subtareas. */
-function Subtareas({ id }: { id: string }) {
-  const dependencias = useConexionesControllerFindAll({ nodoId: id, tipo: "DEPENDE_DE" });
-  const hijas = (dependencias.data ?? []).filter((c) => c.origenId === id);
-  if (hijas.length === 0) return null;
-  return (
-    <section>
-      <h2 className="mb-2 text-sm font-semibold text-gray-700">Subtareas ({hijas.length})</h2>
-      <ul className="list-inside list-disc space-y-1 text-sm">
-        {hijas.map((c) => (
-          <li key={c.id}>
-            <Link href={`/nodos/${c.destinoId}`} className="underline-offset-2 hover:underline">
-              {c.destinoId}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
+import { ESTILO_BOTON, ESTILO_CAMPO, ETAPA_ENTRADA } from "@/lib/constants";
 
 export function NodoDetalle({ id }: { id: string }) {
   const nodo = useNodosControllerFindOne(id);
   const bloqueado = useDerivadoControllerBloqueado(id);
   const libera = useDerivadoControllerLibera(id);
+  const etapas = useEtapasControllerLista();
+  const invalidar = useInvalidarGrafo();
+  const actualizar = useNodosControllerUpdate({ mutation: { onSuccess: invalidar } });
 
   if (nodo.isPending) return <p className="text-gray-500">Cargando…</p>;
   if (nodo.isError) return <p className="text-red-600">No existe ese nodo o la API no responde.</p>;
   const n = nodo.data;
+  const cerrado = n.estado === UpdateNodoDtoEstado.CERRADO;
   const porQue = bloqueado.data?.por ?? [];
   const liberados = [...(libera.data?.directos ?? []), ...(libera.data?.cadena ?? [])];
 
@@ -50,7 +39,7 @@ export function NodoDetalle({ id }: { id: string }) {
           {n.prioridad ? ` · p${n.prioridad}` : ""}
           {n.vence ? ` · vence ${n.vence.slice(0, 10)}` : ""}
         </p>
-        <h1 className="mt-1 text-2xl font-bold">{n.titulo}</h1>
+        <h1 className="mt-1 text-2xl font-bold [overflow-wrap:anywhere]">{n.titulo}</h1>
         {n.etiquetas.length > 0 ? (
           <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-gray-600">
             {n.etiquetas.map((etiqueta) => (
@@ -60,6 +49,44 @@ export function NodoDetalle({ id }: { id: string }) {
             ))}
           </div>
         ) : null}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <select
+            value={n.etapa ?? ETAPA_ENTRADA}
+            onChange={(evento) =>
+              actualizar.mutate({
+                id,
+                data: { etapa: evento.target.value === ETAPA_ENTRADA ? null : evento.target.value },
+              })
+            }
+            disabled={actualizar.isPending || !etapas.isSuccess}
+            aria-label="Etapa"
+            className={ESTILO_CAMPO}
+          >
+            {[ETAPA_ENTRADA, ...(etapas.data ?? [])].map((etapa) => (
+              <option key={etapa} value={etapa}>
+                {etapa}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            disabled={actualizar.isPending}
+            onClick={() =>
+              actualizar.mutate({
+                id,
+                data: {
+                  estado: cerrado ? UpdateNodoDtoEstado.ABIERTO : UpdateNodoDtoEstado.CERRADO,
+                },
+              })
+            }
+            className={ESTILO_BOTON}
+          >
+            {cerrado ? "Reabrir" : "Cerrar"}
+          </button>
+          {actualizar.isError ? (
+            <p className="text-sm text-red-600">{actualizar.error.message}</p>
+          ) : null}
+        </div>
       </header>
 
       {bloqueado.data?.bloqueado ? (
@@ -78,13 +105,11 @@ export function NodoDetalle({ id }: { id: string }) {
       {n.descripcion ? (
         <section>
           <h2 className="mb-2 text-sm font-semibold text-gray-700">Descripción</h2>
-          <pre className="whitespace-pre-wrap rounded-lg bg-gray-50 p-4 font-sans text-sm leading-relaxed text-gray-800">
-            {n.descripcion}
-          </pre>
+          <Descripcion texto={n.descripcion} />
         </section>
       ) : null}
 
-      <Subtareas id={id} />
+      <ConexionesNodo id={id} />
 
       {liberados.length > 0 ? (
         <section>

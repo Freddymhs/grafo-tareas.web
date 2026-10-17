@@ -1,185 +1,65 @@
-# template-nextjs-tanstack
+# grafo-tareas.web
 
-Next.js 16 + TanStack Query v5 + TanStack Table v8. Patrón híbrido RSC → SSR prefetch → CSR con caché inteligente.
+La PWA tipo lista de grafo-tareas (FASE 4): el tablero por etapa, "hoy puedo", bloqueos, ramas y el detalle de cada
+nodo, contra la API del grafo (`../grafo-tareas.api`). Nació de `template-nextjs-tanstack`; la demo de la plantilla
+(`posts/`, `table/`, store en memoria) se borró en la FASE 4.
 
-## Stack
+Lo derivado (bloqueado, libera, hoy puedo) lo calcula la API (decisión C1): la web solo lo muestra.
 
-| Capa | Tecnología |
-|---|---|
-| Framework | Next.js 16 (App Router, Turbopack) |
-| React | React 19 |
-| TypeScript | Strict mode |
-| CSS | TailwindCSS 4 |
-| Server state | TanStack Query v5 |
-| DevTools | React Query Devtools |
-| Tablas | TanStack Table v8 |
-| Validación | Zod |
-| Testing unitario | Vitest + happy-dom |
-| Testing e2e | Playwright (Chromium) |
-| CI | GitHub Actions |
-
-## Quick Start
+## Probar
 
 ```bash
 pnpm install
-pnpm dev
+NEXT_PUBLIC_API_URL=http://localhost:3000 pnpm dev -p 3001   # la API corriendo en el 3000
+../bin/servir-tailnet                                        # PWA y API por HTTPS del tailnet (teléfono, Quest)
+pnpm api:generar                                             # regenera el cliente desde ../grafo-tareas.api/openapi.json
 ```
 
-App en `http://localhost:3000`.
+El puerto es el **3001**: el 3000 es la API, y su `CORS_ORIGINS` espera la web ahí.
 
-## Arquitectura de rendering
+## Vistas
 
-```
-Server Component (RSC)
-  └─ queryClient.prefetchQuery()   ← datos en el server
-  └─ <HydrationBoundary state={dehydrate(queryClient)}>
-       └─ <ClientComponent />      ← "use client"
-            └─ useQuery()          ← caché poblado, sin loading flash
-                                   ← refetch, invalidación, polling
-```
+| Ruta          | Qué muestra                                                                                    |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| `/`           | El tablero: una columna por etapa (`GET /etapas`) más la Entrada; alta rápida arriba           |
+| `/hoy`        | Hoy puedo: lo abierto que nada bloquea                                                         |
+| `/bloqueos`   | Personas y dudas abiertas, y qué se libera si contestan                                        |
+| `/ramas`      | Las ramas de color y sus miembros                                                              |
+| `/nodos/[id]` | Detalle: etapa, cerrar/reabrir, qué lo bloquea, descripción en Markdown, conexiones y conectar |
+| `/~offline`   | Lo que muestra el service worker sin red y sin copia de la página                              |
 
-## Rutas
+## Stack
 
-| Ruta | Rendering | Patrón |
-|---|---|---|
-| `/` | RSC | Home — explica el template |
-| `/posts` | SSR prefetch → CSR | `prefetchQuery` + `HydrationBoundary` + `useQuery` |
-| `/posts/[id]` | SSR prefetch → CSR | Detalle con delete via `useMutation` |
-| `/posts/create` | CSR | `useMutation` + `invalidateQueries` → refetch automático |
-| `/table` | CSR | `useReactTable` con sort, filter, pagination |
-| `/api/posts` | API Route | GET list paginado + POST |
-| `/api/posts/[id]` | API Route | GET + PUT + DELETE |
-
-## Scripts
-
-| Script | Descripción |
-|---|---|
-| `pnpm dev` | Dev server (Turbopack) |
-| `pnpm build` | Build producción |
-| `pnpm start` | Servidor producción |
-| `pnpm lint` | ESLint |
-| `pnpm type-check` | TypeScript |
-| `pnpm test:run` | Tests unitarios |
-| `pnpm test:e2e` | Tests e2e (Playwright) |
+| Capa         | Tecnología                                                                                        |
+| ------------ | ------------------------------------------------------------------------------------------------- |
+| Framework    | Next.js 16 (App Router); `dev` con Turbopack, `build` con `--webpack` (lo pide Serwist)           |
+| Server state | TanStack Query v5, hooks generados por Orval desde el OpenAPI de la API (`src/lib/api/generado/`) |
+| PWA          | Serwist: precache del build y `NetworkFirst` sobre los GET a la API (offline de lectura)          |
+| Markdown     | `react-markdown` + `remark-gfm`, sin HTML crudo                                                   |
+| CSS          | Tailwind CSS 4                                                                                    |
+| Tests        | Vitest (unit) · Playwright (e2e, `PW_CHANNEL=chrome` para usar el Chrome del sistema)             |
 
 ## Estructura
 
 ```
 src/
-  app/
-    layout.tsx              # Wraps <Providers>
-    page.tsx                # Home RSC
-    posts/
-      page.tsx              # Server: prefetchQuery + HydrationBoundary
-      posts-list.tsx        # Client: useQuery (usa caché del server)
-      create/page.tsx       # Client: useMutation + invalidateQueries
-      [id]/
-        page.tsx            # Server: prefetchQuery detail
-        post-detail.tsx     # Client: useQuery + delete mutation
-    table/page.tsx          # Client: useQuery + useReactTable
-    api/posts/
-      route.ts              # GET list + POST
-      [id]/route.ts         # GET + PUT + DELETE
-  components/
-    providers.tsx           # QueryClientProvider + DevTools
-    query-boundary.tsx      # Suspense + ErrorBoundary reutilizable
-  lib/
-    query-keys.ts           # postKeys factory centralizado
-    api/posts.ts            # fetch functions con Zod parse
-    schemas/post.ts         # Zod schemas + tipos exportados
-    store/posts.ts          # In-memory store (solo dev/template)
-    constants/index.ts
-    utils/index.ts
+  app/                    vistas (cada una: page.tsx RSC + componente cliente), manifest.ts, sw.ts, ~offline/
+  components/             tarjeta-nodo, crear-nodo, conexiones-nodo, descripcion, providers
+  lib/api/                cliente.ts (el único fetch: desenvuelve {data, meta}), generado/ (Orval), invalidar-grafo.ts
+  lib/grafo/              lógica pura de presentación (describir-conexion)
+  lib/constants/          SSOT de la web: API_URL, etapas, prioridades, textos de conexión, estilos, PWA
+e2e/                      navegación, aviso sin API, offline y manifest (sin API real: en CI no hay)
 ```
 
-## Patrones clave
+## Scripts
 
-### Query key factory
-```typescript
-// lib/query-keys.ts
-export const postKeys = {
-  all: ['posts'] as const,
-  lists: () => [...postKeys.all, 'list'] as const,
-  list: (params) => [...postKeys.lists(), params] as const,
-  detail: (id) => [...postKeys.details(), id] as const,
-};
-```
-
-### SSR prefetch + HydrationBoundary
-```typescript
-// Server Component
-const queryClient = new QueryClient();
-await queryClient.prefetchQuery({ queryKey: postKeys.list({}), queryFn: fetchPosts });
-return (
-  <HydrationBoundary state={dehydrate(queryClient)}>
-    <PostsList /> {/* ya tiene datos — sin loading flash */}
-  </HydrationBoundary>
-);
-```
-
-### useMutation + invalidación
-```typescript
-const mutation = useMutation({
-  mutationFn: createPost,
-  onSuccess: () => queryClient.invalidateQueries({ queryKey: postKeys.lists() }),
-});
-```
-
----
-
-## Verificación
-
-Todo lo siguiente está comprobado y funcionando al 100%.
-
-### Calidad de código
-| Check | Comando |
-|---|---|
-| Lint | `pnpm lint` |
-| Tipado estricto | `pnpm type-check` |
-| Build (Turbopack) | `pnpm build` |
-
-### Tests unitarios (27/27)
-```bash
-pnpm test:run
-```
-| Suite | Cubre |
-|---|---|
-| `query-keys.test.ts` (5) | Factory: all, lists(), list(params), detail(id), keys distintos |
-| `schemas/post.test.ts` (8) | Post válido, uuid inválido, title faltante, lista response, total negativo, CreateInput válido/inválido |
-| `store/posts.test.ts` (9) | findAll paginado, create+findById, update (preserva campos), delete, 404s |
-| `utils/index.test.ts` (5) | cn() join/falsy/vacío, formatDate() formato y no vacío |
-
-### Tests e2e (14/14)
-```bash
-pnpm build && pnpm test:e2e
-```
-| Suite | Cubre |
-|---|---|
-| `posts.spec.ts` (4) | Sin spinner en carga (SSR prefetch), items visibles, navegación a detalle, crear post → redirect + caché invalidado |
-| `table.spec.ts` (4) | Tabla renderiza, filtro auto-contenido (autor único), sort ASC/DESC en columna, paginación next/prev |
-| `api.spec.ts` (6) | GET list paginado, POST 201, POST 422 inválido, GET by id, GET 404, DELETE 204 |
-
-### Runtime verificado en navegador
-| Ruta / Flujo | Resultado |
-|---|---|
-| `GET /` | Home RSC con 4 feature cards, sin errores de consola |
-| `GET /posts` | Lista sin loading flash (SSR prefetch + HydrationBoundary), 20 total |
-| `GET /posts/:id` | Detalle con título, autor, fecha y botón Delete |
-| `DELETE /posts/:id` | Redirige a lista, count baja de 20 → 19, Post eliminado desaparece |
-| `POST /posts/create` | Form → POST → redirect a detalle → lista refetches (invalidateQueries), nuevo post al tope |
-| `GET /table` | Tabla 20 rows / 4 páginas, sort ↑↓ por columna, filter, paginación next/prev |
-| `GET /api/posts` | JSON paginado correcto |
-| ReactQueryDevtools | Panel abre, muestra queries con estado Fresh/Inactive/Stale, tab Mutations |
-
-### CI (GitHub Actions)
-`pnpm install` → `pnpm lint` → `pnpm type-check` → `pnpm build` → `pnpm test:run` → `playwright install chromium` → `pnpm test:e2e`
-
-### Pipeline de commits (local)
-`git commit` → husky → lint-staged → `eslint --fix` + `prettier --write`
-
-### Gaps conocidos
-- **Sin Docker**: deploy habitual es Vercel
-- **Sin auth**: se agrega por proyecto
-- **In-memory store**: los datos se pierden al reiniciar el server — reemplazar con DB real por proyecto
-- **TanStack Table + React Compiler**: `useReactTable` no es memoizable por React Compiler (warning suprimido con eslint-disable). Comportamiento esperado — TanStack Table v8 no es compatible con React Compiler
-- **E2e en CI requiere `pnpm build` previo**: el webServer usa `pnpm start` en CI
+| Script             | Qué hace                                                   |
+| ------------------ | ---------------------------------------------------------- |
+| `pnpm dev`         | Servidor de desarrollo (sin service worker)                |
+| `pnpm build`       | Build de producción (`next build --webpack`) + `sw.js`     |
+| `pnpm start`       | Servidor de producción                                     |
+| `pnpm lint`        | ESLint                                                     |
+| `pnpm type-check`  | TypeScript                                                 |
+| `pnpm test:run`    | Vitest                                                     |
+| `pnpm test:e2e`    | Playwright (levanta la web en el 3001 o reusa la que esté) |
+| `pnpm api:generar` | Orval + prettier sobre lo generado                         |

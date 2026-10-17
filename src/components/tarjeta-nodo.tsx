@@ -22,7 +22,7 @@ export function TarjetaNodo({ nodo }: { nodo: Nodo }) {
         cerrado ? "opacity-50 line-through" : ""
       }`}
     >
-      <p className="font-medium text-gray-900">{nodo.titulo}</p>
+      <p className="font-medium text-gray-900 [overflow-wrap:anywhere]">{nodo.titulo}</p>
       {detalle ? (
         <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-gray-500">
           {prioridadVisible ? (

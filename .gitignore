@@ -38,3 +38,6 @@ next-env.d.ts
 .cache/
 .eslintcache
 .prettiercache
+
+# Serwist: el service worker se genera en el build
+public/sw*
