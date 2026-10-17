@@ -15,15 +15,18 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "api:generar": "orval && prettier --write src/lib/api/generado"
   },
   "dependencies": {
+    "@serwist/next": "^9.5.13",
     "@tanstack/react-query": "^5.80.2",
     "@tanstack/react-query-devtools": "^5.80.2",
     "@tanstack/react-table": "^8.21.3",
     "next": "16.1.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "serwist": "^9.5.13",
     "zod": "^3.25.23"
   },
   "devDependencies": {
@@ -39,6 +42,7 @@
     "happy-dom": "^20.6.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.3.0",
+    "orval": "^8.43.0",
     "prettier": "^3.5.3",
     "tailwindcss": "^4",
     "typescript": "^5",
