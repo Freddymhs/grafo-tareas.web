@@ -34,6 +34,7 @@ export const PRIORIDAD_VISIBLE_MAXIMA = 2;
 
 export const NAVEGACION = [
   { href: "/", titulo: "Tablero" },
+  { href: "/dia", titulo: "El día" },
   { href: "/hoy", titulo: "Hoy puedo" },
   { href: "/bloqueos", titulo: "Bloqueos" },
   { href: "/ramas", titulo: "Ramas" },
@@ -57,6 +58,9 @@ export const TIPO_CONEXION_POR_DEFECTO = CreateConexionDtoTipo.DEPENDE_DE;
 /** Buscador para conectar: desde 2 letras, hasta 20 resultados. */
 export const LARGO_MINIMO_BUSQUEDA = 2;
 export const LIMITE_BUSQUEDA = 20;
+
+/** Cuánto se muestra «Copiado» después de copiar el parte. */
+export const MS_AVISO_COPIADO = 2000;
 
 /** PWA: color de la barra del sistema y nombre de la caché del service worker para las lecturas de la API. */
 export const COLOR_TEMA = "#111827";

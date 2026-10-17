@@ -20,6 +20,8 @@ import type {
 
 import type {
   BloqueadoResponseDto,
+  DerivadoControllerDiaParams,
+  DiaResponseDto,
   ErrorResponseDto,
   LiberaResponseDto,
   NodoResumenDto,
@@ -162,6 +164,151 @@ export function useDerivadoControllerHoyPuedo<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getDerivadoControllerHoyPuedoQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const getDerivadoControllerDiaUrl = (params?: DerivadoControllerDiaParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/derivado/dia?${stringifiedParams}`
+    : `/api/v1/derivado/dia`;
+};
+
+/**
+ * @summary El parte del día: terminé, en curso (y si pasa del límite), detenido y para decir
+ */
+export const derivadoControllerDia = async (
+  params?: DerivadoControllerDiaParams,
+  options?: Parameters<typeof cliente>[1],
+): Promise<DiaResponseDto> => {
+  return cliente<DiaResponseDto>(getDerivadoControllerDiaUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getDerivadoControllerDiaQueryKey = (params?: DerivadoControllerDiaParams) => {
+  return [`/api/v1/derivado/dia`, ...(params ? [params] : [])] as const;
+};
+
+export const getDerivadoControllerDiaQueryOptions = <
+  TData = Awaited<ReturnType<typeof derivadoControllerDia>>,
+  TError = unknown,
+>(
+  params?: DerivadoControllerDiaParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerDia>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getDerivadoControllerDiaQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof derivadoControllerDia>>> = ({ signal }) =>
+    derivadoControllerDia(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof derivadoControllerDia>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type DerivadoControllerDiaQueryResult = NonNullable<
+  Awaited<ReturnType<typeof derivadoControllerDia>>
+>;
+export type DerivadoControllerDiaQueryError = unknown;
+
+export function useDerivadoControllerDia<
+  TData = Awaited<ReturnType<typeof derivadoControllerDia>>,
+  TError = unknown,
+>(
+  params: undefined | DerivadoControllerDiaParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerDia>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof derivadoControllerDia>>,
+          TError,
+          Awaited<ReturnType<typeof derivadoControllerDia>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useDerivadoControllerDia<
+  TData = Awaited<ReturnType<typeof derivadoControllerDia>>,
+  TError = unknown,
+>(
+  params?: DerivadoControllerDiaParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerDia>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof derivadoControllerDia>>,
+          TError,
+          Awaited<ReturnType<typeof derivadoControllerDia>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useDerivadoControllerDia<
+  TData = Awaited<ReturnType<typeof derivadoControllerDia>>,
+  TError = unknown,
+>(
+  params?: DerivadoControllerDiaParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerDia>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary El parte del día: terminé, en curso (y si pasa del límite), detenido y para decir
+ */
+
+export function useDerivadoControllerDia<
+  TData = Awaited<ReturnType<typeof derivadoControllerDia>>,
+  TError = unknown,
+>(
+  params?: DerivadoControllerDiaParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerDia>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getDerivadoControllerDiaQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

@@ -4,12 +4,13 @@ import { test, expect } from "@playwright/test";
 // responde, la página offline y el manifest de la PWA.
 const VISTAS = [
   { href: "/", titulo: "Tablero" },
+  { href: "/dia", titulo: "El día" },
   { href: "/hoy", titulo: "Hoy puedo" },
   { href: "/bloqueos", titulo: "Bloqueos" },
   { href: "/ramas", titulo: "Ramas" },
 ];
 
-test("la barra lleva a las cuatro vistas y cada una tiene su título", async ({ page }) => {
+test("la barra lleva a cada vista y cada una tiene su título", async ({ page }) => {
   await page.goto("/");
   for (const { href, titulo } of VISTAS) {
     await page.getByRole("navigation").getByRole("link", { name: titulo }).click();
