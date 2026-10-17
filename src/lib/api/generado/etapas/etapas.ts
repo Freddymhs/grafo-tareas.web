@@ -37,16 +37,6 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type etapasControllerListaResponse200 = {
-  data: string[];
-  status: 200;
-};
-
-export type etapasControllerListaResponseSuccess = etapasControllerListaResponse200 & {
-  headers: Headers;
-};
-export type etapasControllerListaResponse = etapasControllerListaResponseSuccess;
-
 export const getEtapasControllerListaUrl = () => {
   return `/api/v1/etapas`;
 };
@@ -56,8 +46,8 @@ export const getEtapasControllerListaUrl = () => {
  */
 export const etapasControllerLista = async (
   options?: Parameters<typeof cliente>[1],
-): Promise<etapasControllerListaResponse> => {
-  return cliente<etapasControllerListaResponse>(getEtapasControllerListaUrl(), {
+): Promise<string[]> => {
+  return cliente<string[]>(getEtapasControllerListaUrl(), {
     ...options,
     method: "GET",
   });

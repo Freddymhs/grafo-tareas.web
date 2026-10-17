@@ -15,6 +15,7 @@ export type NodosControllerFindAllParams = {
   offset?: number;
   /**
    * @minimum 1
+   * @maximum 500
    */
   limit?: number;
   tipo?: NodosControllerFindAllTipo;
@@ -24,6 +25,10 @@ export type NodosControllerFindAllParams = {
    */
   etapa?: string;
   etiqueta?: string;
+  /**
+   * Solo los nodos que PERTENECEN_A esta rama
+   */
+  rama?: string;
   /**
    * Busca en título y descripción, sin distinguir mayúsculas
    */

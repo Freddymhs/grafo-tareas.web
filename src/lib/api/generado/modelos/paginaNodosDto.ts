@@ -5,5 +5,10 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
+import type { NodoResponseDto } from "./nodoResponseDto";
 
-export type RamaResponseDtoColor = { [key: string]: unknown };
+export interface PaginaNodosDto {
+  data: NodoResponseDto[];
+  /** Total que cumple el filtro, sin paginar */
+  total: number;
+}

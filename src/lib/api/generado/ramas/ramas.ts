@@ -42,16 +42,6 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type ramasControllerFindAllResponse200 = {
-  data: RamaResponseDto[];
-  status: 200;
-};
-
-export type ramasControllerFindAllResponseSuccess = ramasControllerFindAllResponse200 & {
-  headers: Headers;
-};
-export type ramasControllerFindAllResponse = ramasControllerFindAllResponseSuccess;
-
 export const getRamasControllerFindAllUrl = () => {
   return `/api/v1/ramas`;
 };
@@ -61,8 +51,8 @@ export const getRamasControllerFindAllUrl = () => {
  */
 export const ramasControllerFindAll = async (
   options?: Parameters<typeof cliente>[1],
-): Promise<ramasControllerFindAllResponse> => {
-  return cliente<ramasControllerFindAllResponse>(getRamasControllerFindAllUrl(), {
+): Promise<RamaResponseDto[]> => {
+  return cliente<RamaResponseDto[]>(getRamasControllerFindAllUrl(), {
     ...options,
     method: "GET",
   });
@@ -177,27 +167,6 @@ export function useRamasControllerFindAll<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type ramasControllerCreateResponse201 = {
-  data: NodoResponseDto;
-  status: 201;
-};
-
-export type ramasControllerCreateResponse400 = {
-  data: ErrorResponseDto;
-  status: 400;
-};
-
-export type ramasControllerCreateResponseSuccess = ramasControllerCreateResponse201 & {
-  headers: Headers;
-};
-export type ramasControllerCreateResponseError = ramasControllerCreateResponse400 & {
-  headers: Headers;
-};
-
-export type ramasControllerCreateResponse =
-  | ramasControllerCreateResponseSuccess
-  | ramasControllerCreateResponseError;
-
 export const getRamasControllerCreateUrl = () => {
   return `/api/v1/ramas`;
 };
@@ -208,7 +177,7 @@ export const getRamasControllerCreateUrl = () => {
 export const ramasControllerCreate = async (
   createRamaDto: CreateRamaDto,
   options?: Parameters<typeof cliente>[1],
-): Promise<ramasControllerCreateResponse> => {
+): Promise<NodoResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
   ): Record<string, string | readonly string[]> => {
@@ -228,7 +197,7 @@ export const ramasControllerCreate = async (
     }
     return headers;
   };
-  return cliente<ramasControllerCreateResponse>(getRamasControllerCreateUrl(), {
+  return cliente<NodoResponseDto>(getRamasControllerCreateUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },

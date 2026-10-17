@@ -5,13 +5,13 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
-import type { RamaResponseDtoColor } from "./ramaResponseDtoColor";
 import type { RamaResponseDtoEstado } from "./ramaResponseDtoEstado";
 
 export interface RamaResponseDto {
   id: string;
   titulo: string;
-  color: RamaResponseDtoColor;
+  /** @nullable */
+  color?: string | null;
   estado: RamaResponseDtoEstado;
   /** Nodos que PERTENECEN_A esta rama */
   miembros: number;

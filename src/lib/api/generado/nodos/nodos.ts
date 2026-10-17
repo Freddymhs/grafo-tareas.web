@@ -27,6 +27,7 @@ import type {
   GuardarPosicionesDto,
   NodoResponseDto,
   NodosControllerFindAllParams,
+  PaginaNodosDto,
   UpdateNodoDto,
 } from "../modelos";
 
@@ -49,16 +50,6 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type nodosControllerFindAllResponse200 = {
-  data: NodoResponseDto[];
-  status: 200;
-};
-
-export type nodosControllerFindAllResponseSuccess = nodosControllerFindAllResponse200 & {
-  headers: Headers;
-};
-export type nodosControllerFindAllResponse = nodosControllerFindAllResponseSuccess;
-
 export const getNodosControllerFindAllUrl = (params?: NodosControllerFindAllParams) => {
   const normalizedParams = new URLSearchParams();
 
@@ -74,13 +65,13 @@ export const getNodosControllerFindAllUrl = (params?: NodosControllerFindAllPara
 };
 
 /**
- * @summary Listar nodos, filtrando por tipo o estado
+ * @summary Listar nodos: por tipo, estado, etapa, etiqueta, rama o texto
  */
 export const nodosControllerFindAll = async (
   params?: NodosControllerFindAllParams,
   options?: Parameters<typeof cliente>[1],
-): Promise<nodosControllerFindAllResponse> => {
-  return cliente<nodosControllerFindAllResponse>(getNodosControllerFindAllUrl(params), {
+): Promise<PaginaNodosDto> => {
+  return cliente<PaginaNodosDto>(getNodosControllerFindAllUrl(params), {
     ...options,
     method: "GET",
   });
@@ -177,7 +168,7 @@ export function useNodosControllerFindAll<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Listar nodos, filtrando por tipo o estado
+ * @summary Listar nodos: por tipo, estado, etapa, etiqueta, rama o texto
  */
 
 export function useNodosControllerFindAll<
@@ -202,35 +193,6 @@ export function useNodosControllerFindAll<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type nodosControllerCreateResponse201 = {
-  data: NodoResponseDto;
-  status: 201;
-};
-
-export type nodosControllerCreateResponse400 = {
-  data: ErrorResponseDto;
-  status: 400;
-};
-
-export type nodosControllerCreateResponse409 = {
-  data: ErrorResponseDto;
-  status: 409;
-};
-
-export type nodosControllerCreateResponseSuccess = nodosControllerCreateResponse201 & {
-  headers: Headers;
-};
-export type nodosControllerCreateResponseError = (
-  | nodosControllerCreateResponse400
-  | nodosControllerCreateResponse409
-) & {
-  headers: Headers;
-};
-
-export type nodosControllerCreateResponse =
-  | nodosControllerCreateResponseSuccess
-  | nodosControllerCreateResponseError;
-
 export const getNodosControllerCreateUrl = () => {
   return `/api/v1/nodos`;
 };
@@ -241,7 +203,7 @@ export const getNodosControllerCreateUrl = () => {
 export const nodosControllerCreate = async (
   createNodoDto: CreateNodoDto,
   options?: Parameters<typeof cliente>[1],
-): Promise<nodosControllerCreateResponse> => {
+): Promise<NodoResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
   ): Record<string, string | readonly string[]> => {
@@ -261,7 +223,7 @@ export const nodosControllerCreate = async (
     }
     return headers;
   };
-  return cliente<nodosControllerCreateResponse>(getNodosControllerCreateUrl(), {
+  return cliente<NodoResponseDto>(getNodosControllerCreateUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
@@ -336,29 +298,6 @@ export const useNodosControllerCreate = <TError = ErrorResponseDto, TContext = u
 > => {
   return useMutation(getNodosControllerCreateMutationOptions(options), queryClient);
 };
-export type nodosControllerGuardarPosicionesResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type nodosControllerGuardarPosicionesResponse404 = {
-  data: ErrorResponseDto;
-  status: 404;
-};
-
-export type nodosControllerGuardarPosicionesResponseSuccess =
-  nodosControllerGuardarPosicionesResponse200 & {
-    headers: Headers;
-  };
-export type nodosControllerGuardarPosicionesResponseError =
-  nodosControllerGuardarPosicionesResponse404 & {
-    headers: Headers;
-  };
-
-export type nodosControllerGuardarPosicionesResponse =
-  | nodosControllerGuardarPosicionesResponseSuccess
-  | nodosControllerGuardarPosicionesResponseError;
-
 export const getNodosControllerGuardarPosicionesUrl = () => {
   return `/api/v1/nodos/posiciones`;
 };
@@ -369,7 +308,7 @@ export const getNodosControllerGuardarPosicionesUrl = () => {
 export const nodosControllerGuardarPosiciones = async (
   guardarPosicionesDto: GuardarPosicionesDto,
   options?: Parameters<typeof cliente>[1],
-): Promise<nodosControllerGuardarPosicionesResponse> => {
+): Promise<void> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
   ): Record<string, string | readonly string[]> => {
@@ -389,15 +328,12 @@ export const nodosControllerGuardarPosiciones = async (
     }
     return headers;
   };
-  return cliente<nodosControllerGuardarPosicionesResponse>(
-    getNodosControllerGuardarPosicionesUrl(),
-    {
-      ...options,
-      method: "PUT",
-      headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
-      body: JSON.stringify(guardarPosicionesDto),
-    },
-  );
+  return cliente<void>(getNodosControllerGuardarPosicionesUrl(), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
+    body: JSON.stringify(guardarPosicionesDto),
+  });
 };
 
 export const getNodosControllerGuardarPosicionesMutationKey = () =>
@@ -468,27 +404,6 @@ export const useNodosControllerGuardarPosiciones = <TError = ErrorResponseDto, T
 > => {
   return useMutation(getNodosControllerGuardarPosicionesMutationOptions(options), queryClient);
 };
-export type nodosControllerFindOneResponse200 = {
-  data: NodoResponseDto;
-  status: 200;
-};
-
-export type nodosControllerFindOneResponse404 = {
-  data: ErrorResponseDto;
-  status: 404;
-};
-
-export type nodosControllerFindOneResponseSuccess = nodosControllerFindOneResponse200 & {
-  headers: Headers;
-};
-export type nodosControllerFindOneResponseError = nodosControllerFindOneResponse404 & {
-  headers: Headers;
-};
-
-export type nodosControllerFindOneResponse =
-  | nodosControllerFindOneResponseSuccess
-  | nodosControllerFindOneResponseError;
-
 export const getNodosControllerFindOneUrl = (id: string) => {
   return `/api/v1/nodos/${id}`;
 };
@@ -499,8 +414,8 @@ export const getNodosControllerFindOneUrl = (id: string) => {
 export const nodosControllerFindOne = async (
   id: string,
   options?: Parameters<typeof cliente>[1],
-): Promise<nodosControllerFindOneResponse> => {
-  return cliente<nodosControllerFindOneResponse>(getNodosControllerFindOneUrl(id), {
+): Promise<NodoResponseDto> => {
+  return cliente<NodoResponseDto>(getNodosControllerFindOneUrl(id), {
     ...options,
     method: "GET",
   });
@@ -625,27 +540,6 @@ export function useNodosControllerFindOne<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type nodosControllerUpdateResponse200 = {
-  data: NodoResponseDto;
-  status: 200;
-};
-
-export type nodosControllerUpdateResponse404 = {
-  data: ErrorResponseDto;
-  status: 404;
-};
-
-export type nodosControllerUpdateResponseSuccess = nodosControllerUpdateResponse200 & {
-  headers: Headers;
-};
-export type nodosControllerUpdateResponseError = nodosControllerUpdateResponse404 & {
-  headers: Headers;
-};
-
-export type nodosControllerUpdateResponse =
-  | nodosControllerUpdateResponseSuccess
-  | nodosControllerUpdateResponseError;
-
 export const getNodosControllerUpdateUrl = (id: string) => {
   return `/api/v1/nodos/${id}`;
 };
@@ -657,7 +551,7 @@ export const nodosControllerUpdate = async (
   id: string,
   updateNodoDto: UpdateNodoDto,
   options?: Parameters<typeof cliente>[1],
-): Promise<nodosControllerUpdateResponse> => {
+): Promise<NodoResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
   ): Record<string, string | readonly string[]> => {
@@ -677,7 +571,7 @@ export const nodosControllerUpdate = async (
     }
     return headers;
   };
-  return cliente<nodosControllerUpdateResponse>(getNodosControllerUpdateUrl(id), {
+  return cliente<NodoResponseDto>(getNodosControllerUpdateUrl(id), {
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
@@ -752,27 +646,6 @@ export const useNodosControllerUpdate = <TError = ErrorResponseDto, TContext = u
 > => {
   return useMutation(getNodosControllerUpdateMutationOptions(options), queryClient);
 };
-export type nodosControllerRemoveResponse204 = {
-  data: void;
-  status: 204;
-};
-
-export type nodosControllerRemoveResponse404 = {
-  data: ErrorResponseDto;
-  status: 404;
-};
-
-export type nodosControllerRemoveResponseSuccess = nodosControllerRemoveResponse204 & {
-  headers: Headers;
-};
-export type nodosControllerRemoveResponseError = nodosControllerRemoveResponse404 & {
-  headers: Headers;
-};
-
-export type nodosControllerRemoveResponse =
-  | nodosControllerRemoveResponseSuccess
-  | nodosControllerRemoveResponseError;
-
 export const getNodosControllerRemoveUrl = (id: string) => {
   return `/api/v1/nodos/${id}`;
 };
@@ -783,8 +656,8 @@ export const getNodosControllerRemoveUrl = (id: string) => {
 export const nodosControllerRemove = async (
   id: string,
   options?: Parameters<typeof cliente>[1],
-): Promise<nodosControllerRemoveResponse> => {
-  return cliente<nodosControllerRemoveResponse>(getNodosControllerRemoveUrl(id), {
+): Promise<void> => {
+  return cliente<void>(getNodosControllerRemoveUrl(id), {
     ...options,
     method: "DELETE",
   });

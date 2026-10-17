@@ -14,6 +14,8 @@ export default defineConfig({
       clean: true,
       override: {
         mutator: { path: "src/lib/api/cliente.ts", name: "cliente" },
+        // El mutator ya devuelve el `data` desenvuelto: sin esto Orval tipa cada respuesta como { data, status, headers }.
+        fetch: { includeHttpResponseReturnType: false },
       },
     },
   },

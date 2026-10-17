@@ -44,16 +44,6 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type derivadoControllerHoyPuedoResponse200 = {
-  data: NodoResumenDto[];
-  status: 200;
-};
-
-export type derivadoControllerHoyPuedoResponseSuccess = derivadoControllerHoyPuedoResponse200 & {
-  headers: Headers;
-};
-export type derivadoControllerHoyPuedoResponse = derivadoControllerHoyPuedoResponseSuccess;
-
 export const getDerivadoControllerHoyPuedoUrl = () => {
   return `/api/v1/derivado/hoy-puedo`;
 };
@@ -63,8 +53,8 @@ export const getDerivadoControllerHoyPuedoUrl = () => {
  */
 export const derivadoControllerHoyPuedo = async (
   options?: Parameters<typeof cliente>[1],
-): Promise<derivadoControllerHoyPuedoResponse> => {
-  return cliente<derivadoControllerHoyPuedoResponse>(getDerivadoControllerHoyPuedoUrl(), {
+): Promise<NodoResumenDto[]> => {
+  return cliente<NodoResumenDto[]>(getDerivadoControllerHoyPuedoUrl(), {
     ...options,
     method: "GET",
   });
@@ -180,27 +170,6 @@ export function useDerivadoControllerHoyPuedo<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type derivadoControllerBloqueadoResponse200 = {
-  data: BloqueadoResponseDto;
-  status: 200;
-};
-
-export type derivadoControllerBloqueadoResponse404 = {
-  data: ErrorResponseDto;
-  status: 404;
-};
-
-export type derivadoControllerBloqueadoResponseSuccess = derivadoControllerBloqueadoResponse200 & {
-  headers: Headers;
-};
-export type derivadoControllerBloqueadoResponseError = derivadoControllerBloqueadoResponse404 & {
-  headers: Headers;
-};
-
-export type derivadoControllerBloqueadoResponse =
-  | derivadoControllerBloqueadoResponseSuccess
-  | derivadoControllerBloqueadoResponseError;
-
 export const getDerivadoControllerBloqueadoUrl = (id: string) => {
   return `/api/v1/nodos/${id}/bloqueado`;
 };
@@ -211,8 +180,8 @@ export const getDerivadoControllerBloqueadoUrl = (id: string) => {
 export const derivadoControllerBloqueado = async (
   id: string,
   options?: Parameters<typeof cliente>[1],
-): Promise<derivadoControllerBloqueadoResponse> => {
-  return cliente<derivadoControllerBloqueadoResponse>(getDerivadoControllerBloqueadoUrl(id), {
+): Promise<BloqueadoResponseDto> => {
+  return cliente<BloqueadoResponseDto>(getDerivadoControllerBloqueadoUrl(id), {
     ...options,
     method: "GET",
   });
@@ -338,27 +307,6 @@ export function useDerivadoControllerBloqueado<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type derivadoControllerLiberaResponse200 = {
-  data: LiberaResponseDto;
-  status: 200;
-};
-
-export type derivadoControllerLiberaResponse404 = {
-  data: ErrorResponseDto;
-  status: 404;
-};
-
-export type derivadoControllerLiberaResponseSuccess = derivadoControllerLiberaResponse200 & {
-  headers: Headers;
-};
-export type derivadoControllerLiberaResponseError = derivadoControllerLiberaResponse404 & {
-  headers: Headers;
-};
-
-export type derivadoControllerLiberaResponse =
-  | derivadoControllerLiberaResponseSuccess
-  | derivadoControllerLiberaResponseError;
-
 export const getDerivadoControllerLiberaUrl = (id: string) => {
   return `/api/v1/nodos/${id}/libera`;
 };
@@ -369,8 +317,8 @@ export const getDerivadoControllerLiberaUrl = (id: string) => {
 export const derivadoControllerLibera = async (
   id: string,
   options?: Parameters<typeof cliente>[1],
-): Promise<derivadoControllerLiberaResponse> => {
-  return cliente<derivadoControllerLiberaResponse>(getDerivadoControllerLiberaUrl(id), {
+): Promise<LiberaResponseDto> => {
+  return cliente<LiberaResponseDto>(getDerivadoControllerLiberaUrl(id), {
     ...options,
     method: "GET",
   });

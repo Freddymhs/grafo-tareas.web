@@ -47,16 +47,6 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type conexionesControllerFindAllResponse200 = {
-  data: ConexionResponseDto[];
-  status: 200;
-};
-
-export type conexionesControllerFindAllResponseSuccess = conexionesControllerFindAllResponse200 & {
-  headers: Headers;
-};
-export type conexionesControllerFindAllResponse = conexionesControllerFindAllResponseSuccess;
-
 export const getConexionesControllerFindAllUrl = (params?: ConexionesControllerFindAllParams) => {
   const normalizedParams = new URLSearchParams();
 
@@ -79,8 +69,8 @@ export const getConexionesControllerFindAllUrl = (params?: ConexionesControllerF
 export const conexionesControllerFindAll = async (
   params?: ConexionesControllerFindAllParams,
   options?: Parameters<typeof cliente>[1],
-): Promise<conexionesControllerFindAllResponse> => {
-  return cliente<conexionesControllerFindAllResponse>(getConexionesControllerFindAllUrl(params), {
+): Promise<ConexionResponseDto[]> => {
+  return cliente<ConexionResponseDto[]>(getConexionesControllerFindAllUrl(params), {
     ...options,
     method: "GET",
   });
@@ -205,41 +195,6 @@ export function useConexionesControllerFindAll<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export type conexionesControllerCreateResponse201 = {
-  data: ConexionResponseDto;
-  status: 201;
-};
-
-export type conexionesControllerCreateResponse400 = {
-  data: ErrorResponseDto;
-  status: 400;
-};
-
-export type conexionesControllerCreateResponse404 = {
-  data: ErrorResponseDto;
-  status: 404;
-};
-
-export type conexionesControllerCreateResponse409 = {
-  data: ErrorResponseDto;
-  status: 409;
-};
-
-export type conexionesControllerCreateResponseSuccess = conexionesControllerCreateResponse201 & {
-  headers: Headers;
-};
-export type conexionesControllerCreateResponseError = (
-  | conexionesControllerCreateResponse400
-  | conexionesControllerCreateResponse404
-  | conexionesControllerCreateResponse409
-) & {
-  headers: Headers;
-};
-
-export type conexionesControllerCreateResponse =
-  | conexionesControllerCreateResponseSuccess
-  | conexionesControllerCreateResponseError;
-
 export const getConexionesControllerCreateUrl = () => {
   return `/api/v1/conexiones`;
 };
@@ -250,7 +205,7 @@ export const getConexionesControllerCreateUrl = () => {
 export const conexionesControllerCreate = async (
   createConexionDto: CreateConexionDto,
   options?: Parameters<typeof cliente>[1],
-): Promise<conexionesControllerCreateResponse> => {
+): Promise<ConexionResponseDto> => {
   const getHeaders = (
     h?: NonNullable<RequestInit["headers"]>,
   ): Record<string, string | readonly string[]> => {
@@ -270,7 +225,7 @@ export const conexionesControllerCreate = async (
     }
     return headers;
   };
-  return cliente<conexionesControllerCreateResponse>(getConexionesControllerCreateUrl(), {
+  return cliente<ConexionResponseDto>(getConexionesControllerCreateUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...getHeaders(options?.headers) },
@@ -346,27 +301,6 @@ export const useConexionesControllerCreate = <TError = ErrorResponseDto, TContex
 > => {
   return useMutation(getConexionesControllerCreateMutationOptions(options), queryClient);
 };
-export type conexionesControllerRemoveResponse204 = {
-  data: void;
-  status: 204;
-};
-
-export type conexionesControllerRemoveResponse404 = {
-  data: ErrorResponseDto;
-  status: 404;
-};
-
-export type conexionesControllerRemoveResponseSuccess = conexionesControllerRemoveResponse204 & {
-  headers: Headers;
-};
-export type conexionesControllerRemoveResponseError = conexionesControllerRemoveResponse404 & {
-  headers: Headers;
-};
-
-export type conexionesControllerRemoveResponse =
-  | conexionesControllerRemoveResponseSuccess
-  | conexionesControllerRemoveResponseError;
-
 export const getConexionesControllerRemoveUrl = (id: string) => {
   return `/api/v1/conexiones/${id}`;
 };
@@ -377,8 +311,8 @@ export const getConexionesControllerRemoveUrl = (id: string) => {
 export const conexionesControllerRemove = async (
   id: string,
   options?: Parameters<typeof cliente>[1],
-): Promise<conexionesControllerRemoveResponse> => {
-  return cliente<conexionesControllerRemoveResponse>(getConexionesControllerRemoveUrl(id), {
+): Promise<void> => {
+  return cliente<void>(getConexionesControllerRemoveUrl(id), {
     ...options,
     method: "DELETE",
   });

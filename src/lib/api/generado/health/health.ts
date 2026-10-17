@@ -37,27 +37,6 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export type healthControllerCheckResponse200 = {
-  data: void;
-  status: 200;
-};
-
-export type healthControllerCheckResponse503 = {
-  data: void;
-  status: 503;
-};
-
-export type healthControllerCheckResponseSuccess = healthControllerCheckResponse200 & {
-  headers: Headers;
-};
-export type healthControllerCheckResponseError = healthControllerCheckResponse503 & {
-  headers: Headers;
-};
-
-export type healthControllerCheckResponse =
-  | healthControllerCheckResponseSuccess
-  | healthControllerCheckResponseError;
-
 export const getHealthControllerCheckUrl = () => {
   return `/api/v1/health`;
 };
@@ -67,8 +46,8 @@ export const getHealthControllerCheckUrl = () => {
  */
 export const healthControllerCheck = async (
   options?: Parameters<typeof cliente>[1],
-): Promise<healthControllerCheckResponse> => {
-  return cliente<healthControllerCheckResponse>(getHealthControllerCheckUrl(), {
+): Promise<void> => {
+  return cliente<void>(getHealthControllerCheckUrl(), {
     ...options,
     method: "GET",
   });
