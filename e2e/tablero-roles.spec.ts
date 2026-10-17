@@ -10,12 +10,20 @@ const ROLES = {
       nombre: "Producto",
       para: "Features",
       columnas: ["ENTENDIMIENTO", "EN CODIGO"],
+      etapas: [
+        { columna: "ENTENDIMIENTO", que: "revisar la HU y los criterios" },
+        { columna: "EN CODIGO", que: "las tareas de la FASE" },
+      ],
     },
     {
       clave: "calidad",
       nombre: "Calidad",
       para: "Refactor",
       columnas: ["ENTENDIMIENTO", "AMARRAR 🧰"],
+      etapas: [
+        { columna: "ENTENDIMIENTO", que: "la tarjeta y el código" },
+        { columna: "AMARRAR 🧰", que: "línea base y tests contra el código sin tocar" },
+      ],
     },
   ],
 };
@@ -72,11 +80,14 @@ test("el tablero tiene una pestaña por rol y cada una muestra sus columnas y su
   await expect(rol.getByRole("button")).toHaveText(["Todo", "Producto", "Calidad"]);
   const columnas = page.locator("section h2 > span:first-child");
   // «Todo»: la Entrada y las etapas con algo adentro (la FASE también está).
-  await expect(columnas).toHaveText(["Entrada", "ENTENDIMIENTO", "EN CODIGO", "AMARRAR 🧰"]);
-  await expect(page.getByRole("link", { name: /^FASE FASE 8\b/ })).toBeVisible();
+  await expect(columnas).toHaveText(["Sin etapa", "ENTENDIMIENTO", "EN CODIGO", "AMARRAR 🧰"]);
+  await expect(page.getByRole("link", { name: /^FASE 8\b/ })).toBeVisible();
 
+  // Cada columna dice qué significa (FASE 11): «AMARRAR 🧰» sola no se recuerda.
+  await expect(page.getByText("línea base y tests contra el código sin tocar")).toBeVisible();
+  await expect(page.getByText(/llegó sin columna/)).toBeVisible();
   await rol.getByRole("button", { name: "Calidad" }).click();
-  await expect(columnas).toHaveText(["Entrada", "ENTENDIMIENTO", "AMARRAR 🧰"]);
+  await expect(columnas).toHaveText(["Sin etapa", "ENTENDIMIENTO", "AMARRAR 🧰"]);
   await expect(page.getByRole("link", { name: /^refactor\b/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /^feature\b/ })).toHaveCount(0);
   expect(pedidosConRol).toContain("calidad");

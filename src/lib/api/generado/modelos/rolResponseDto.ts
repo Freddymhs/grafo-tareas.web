@@ -5,6 +5,7 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
+import type { ColumnaDeRolDto } from "./columnaDeRolDto";
 
 export interface RolResponseDto {
   clave: string;
@@ -12,4 +13,6 @@ export interface RolResponseDto {
   para: string;
   /** Las columnas de su tablero, en orden (todas están en GET /etapas) */
   columnas: string[];
+  /** Las mismas columnas, con lo que significa cada una */
+  etapas: ColumnaDeRolDto[];
 }

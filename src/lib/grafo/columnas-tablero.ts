@@ -1,8 +1,10 @@
 import type { NodoResponseDto } from "@/lib/api/generado/modelos";
-import { ETAPA_ENTRADA, ETAPA_OTRAS } from "@/lib/constants";
+import { ETAPA_ENTRADA, ETAPA_OTRAS, QUE_OTRAS_ETAPAS, QUE_SIN_ETAPA } from "@/lib/constants";
 
 export interface Columna {
   readonly nombre: string;
+  /** Qué significa la columna (el `que` de roles.yaml); null si nadie lo dijo. */
+  readonly que: string | null;
   readonly nodos: readonly NodoResponseDto[];
 }
 
@@ -15,6 +17,7 @@ export function columnasDelTablero(
   nodos: readonly NodoResponseDto[],
   columnas: readonly string[],
   soloConNodos: boolean,
+  queDe: ReadonlyMap<string, string> = new Map(),
 ): readonly Columna[] {
   const nombres = [ETAPA_ENTRADA, ...columnas];
   const conocidas = new Set(nombres);
@@ -22,8 +25,13 @@ export function columnasDelTablero(
     const etapa = nodo.etapa ?? ETAPA_ENTRADA;
     return conocidas.has(etapa) ? etapa : ETAPA_OTRAS;
   };
+  const queFijo = new Map([
+    [ETAPA_ENTRADA, QUE_SIN_ETAPA],
+    [ETAPA_OTRAS, QUE_OTRAS_ETAPAS],
+  ]);
   const armadas = [...nombres, ETAPA_OTRAS].map((nombre) => ({
     nombre,
+    que: queFijo.get(nombre) ?? queDe.get(nombre) ?? null,
     nodos: nodos.filter((nodo) => columnaDe(nodo) === nombre),
   }));
   return armadas.filter(({ nombre, nodos: deLaColumna }) => {

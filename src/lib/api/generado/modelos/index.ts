@@ -8,6 +8,7 @@
 
 export * from "./areaResponseDto";
 export * from "./bloqueadoResponseDto";
+export * from "./columnaDeRolDto";
 export * from "./complementoDeCatalogoDto";
 export * from "./complementoDeCatalogoDtoNodo";
 export * from "./complementoResponseDto";

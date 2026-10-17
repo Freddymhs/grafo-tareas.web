@@ -48,9 +48,16 @@ export function Tablero() {
 
   const rol = roles.data.roles.find(({ clave }) => clave === rolElegido);
   const nodos = [...fases.data.data, ...tareas.data.data];
+  // Lo que significa cada columna, de roles.yaml: «AMARRAR 🧰» sola no se recuerda (Freddy, FASE 11). En la pestaña de
+  // un rol, lo que dice ese rol; en «Todo», el primero que la declara (ENTENDIMIENTO es de varios y dice distinto).
+  const declaradas = (rol ? [rol] : roles.data.roles)
+    .flatMap(({ etapas: deRol }) => deRol)
+    .flatMap(({ columna, que }) => (que ? [[columna, que] as const] : []))
+    .reverse();
+  const queDe = new Map(declaradas);
   const columnas = rol
-    ? columnasDelTablero(nodos, rol.columnas, false)
-    : columnasDelTablero(nodos, etapas.data, true);
+    ? columnasDelTablero(nodos, rol.columnas, false, queDe)
+    : columnasDelTablero(nodos, etapas.data, true, queDe);
   const opciones = [
     { clave: ROL_TODO, nombre: NOMBRE_ROL_TODO },
     ...roles.data.roles.map(({ clave, nombre }) => ({ clave, nombre })),
@@ -77,14 +84,19 @@ export function Tablero() {
       ) : null}
       {rol ? <p className="mb-3 text-sm text-gray-500">{rol.para}</p> : null}
       <CrearNodo etapas={etapas.data} />
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        {columnas.map(({ nombre, nodos: tarjetas }) => (
-          <section key={nombre} className="w-72 shrink-0 rounded-xl bg-gray-50 p-3">
-            <h2 className="mb-3 flex items-baseline justify-between text-sm font-semibold text-gray-700">
+      {/* El tablero entra en la pantalla: cada columna mide lo que tiene (items-start) y hace su propio scroll. */}
+      <div className="flex items-start gap-3 overflow-x-auto pb-4">
+        {columnas.map(({ nombre, que, nodos: tarjetas }) => (
+          <section
+            key={nombre}
+            className="flex max-h-[calc(100dvh-12rem)] w-64 shrink-0 flex-col rounded-xl bg-gray-50 p-3"
+          >
+            <h2 className="flex items-baseline justify-between text-sm font-semibold text-gray-700">
               <span>{nombre}</span>
               <span className="text-xs font-normal text-gray-400">{tarjetas.length}</span>
             </h2>
-            <div className="space-y-2">
+            {que ? <p className="mt-0.5 text-xs text-gray-500">{que}</p> : null}
+            <div className="mt-3 min-h-0 space-y-2 overflow-y-auto">
               {tarjetas.map((nodo) => (
                 <TarjetaNodo key={nodo.id} nodo={nodo} />
               ))}
