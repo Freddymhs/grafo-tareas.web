@@ -9,7 +9,14 @@ import type { NodosControllerFindAllParams } from "@/lib/api/generado/modelos";
 import { CrearNodo } from "@/components/crear-nodo";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { columnasDelTablero } from "@/lib/grafo/columnas-tablero";
-import { API_URL, LIMITE_TABLERO, NOMBRE_ROL_TODO, ROL_TODO, TIPOS_TABLERO } from "@/lib/constants";
+import {
+  API_URL,
+  LIMITE_TABLERO,
+  NOMBRE_ROL_TODO,
+  OCULTAR_NOTAS,
+  ROL_TODO,
+  TIPOS_TABLERO,
+} from "@/lib/constants";
 
 const [TAREA, FASE] = TIPOS_TABLERO;
 
@@ -24,6 +31,7 @@ export function Tablero() {
   const roles = useRolesControllerLista();
   const filtro: NodosControllerFindAllParams = {
     estado: "ABIERTO",
+    notas: OCULTAR_NOTAS,
     limit: LIMITE_TABLERO,
     ...(rolElegido === ROL_TODO ? {} : { rol: rolElegido }),
   };

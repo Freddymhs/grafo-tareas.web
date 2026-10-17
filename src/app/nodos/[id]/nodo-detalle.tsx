@@ -11,6 +11,7 @@ import {
 } from "@/lib/api/generado/nodos/nodos";
 import { UpdateNodoDtoEstado } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
+import { ComplementosNodo } from "@/components/complementos-nodo";
 import { ConexionesNodo } from "@/components/conexiones-nodo";
 import { Descripcion } from "@/components/descripcion";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
@@ -121,6 +122,8 @@ export function NodoDetalle({ id }: { id: string }) {
           <Descripcion texto={n.descripcion} />
         </section>
       ) : null}
+
+      <ComplementosNodo id={id} />
 
       <ConexionesNodo id={id} />
 

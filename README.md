@@ -19,14 +19,14 @@ El puerto es el **3001**: el 3000 es la API, y su `CORS_ORIGINS` espera la web a
 
 ## Vistas
 
-| Ruta          | Qué muestra                                                                                                                                |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/`           | El tablero: tareas y FASE; «Todo» (etapas con algo) o un rol (`GET /roles`, sus columnas); alta rápida                                     |
-| `/hoy`        | Hoy puedo: lo abierto que nada bloquea                                                                                                     |
-| `/bloqueos`   | Personas y dudas abiertas, y qué se libera si contestan                                                                                    |
-| `/ramas`      | Las ramas de color y sus miembros                                                                                                          |
-| `/nodos/[id]` | Detalle: etapa, cerrar/reabrir (una FASE no: se mueve desde su `.md`, D10), qué lo bloquea, descripción en Markdown, conexiones y conectar |
-| `/~offline`   | Lo que muestra el service worker sin red y sin copia de la página                                                                          |
+| Ruta          | Qué muestra                                                                                                                                                                                                             |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`           | El tablero: tareas y FASE; «Todo» (etapas con algo) o un rol (`GET /roles`, sus columnas); alta rápida                                                                                                                  |
+| `/hoy`        | Hoy puedo: lo abierto que nada bloquea                                                                                                                                                                                  |
+| `/bloqueos`   | Personas y dudas abiertas, y qué se libera si contestan                                                                                                                                                                 |
+| `/ramas`      | Las ramas de color y sus miembros                                                                                                                                                                                       |
+| `/nodos/[id]` | Detalle: etapa, cerrar/reabrir (una FASE no: se mueve desde su `.md`, D10), qué lo bloquea, descripción en Markdown, conexiones y conectar, y los complementos (dudas que se escalan o se deciden, apuntes, para decir) |
+| `/~offline`   | Lo que muestra el service worker sin red y sin copia de la página                                                                                                                                                       |
 
 ## Stack
 

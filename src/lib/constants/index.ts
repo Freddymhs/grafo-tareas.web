@@ -1,4 +1,8 @@
-import { CreateConexionDtoTipo, CreateNodoDtoTipo } from "@/lib/api/generado/modelos";
+import {
+  CreateConexionDtoTipo,
+  CreateNodoDtoTipo,
+  NodosControllerFindAllNotas,
+} from "@/lib/api/generado/modelos";
 
 export const APP_NAME = "grafo-tareas";
 
@@ -19,6 +23,11 @@ export const NOMBRE_ROL_TODO = "Todo";
 export const ETAPA_OTRAS = "Otras etapas";
 /** El tablero muestra tareas y FASE; las FASE se ven pero se mueven desde su FASE_n.md (D10). */
 export const TIPOS_TABLERO = [CreateNodoDtoTipo.TAREA, CreateNodoDtoTipo.FASE] as const;
+/** Complementos (FASE 9): una DUDA se escala o se decide; un DAILY_ITEM («para decir») pide su ritual. */
+export const NODO_DUDA = CreateNodoDtoTipo.DUDA;
+export const NODO_PARA_RITUAL = CreateNodoDtoTipo.DAILY_ITEM;
+/** El tablero oculta los complementos que son notas (dolor, apunte, decisión…): se ven en su PBI. */
+export const OCULTAR_NOTAS = NodosControllerFindAllNotas.ocultar;
 
 /** Prioridad 1 y 2 son las que Freddy usa (p1 12, p2 33 de 134); 3 y 4 no se muestran. */
 export const PRIORIDAD_VISIBLE_MAXIMA = 2;

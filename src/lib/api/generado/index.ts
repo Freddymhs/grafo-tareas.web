@@ -1,3 +1,5 @@
+export * from "./area/area";
+export * from "./complementos/complementos";
 export * from "./conexiones/conexiones";
 export * from "./derivado/derivado";
 export * from "./etapas/etapas";

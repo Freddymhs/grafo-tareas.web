@@ -6,20 +6,30 @@
  * OpenAPI spec version: 1.0
  */
 
+export * from "./areaResponseDto";
 export * from "./bloqueadoResponseDto";
+export * from "./complementoDeCatalogoDto";
+export * from "./complementoDeCatalogoDtoNodo";
+export * from "./complementoResponseDto";
+export * from "./complementoResponseDtoEstado";
+export * from "./complementoResponseDtoTipo";
 export * from "./conexionesControllerFindAllParams";
 export * from "./conexionesControllerFindAllTipo";
 export * from "./conexionResponseDto";
 export * from "./conexionResponseDtoTipo";
+export * from "./createComplementoDto";
 export * from "./createConexionDto";
 export * from "./createConexionDtoTipo";
 export * from "./createNodoDto";
 export * from "./createNodoDtoEstado";
 export * from "./createNodoDtoTipo";
 export * from "./createRamaDto";
+export * from "./decidirDto";
 export * from "./errorDetailDto";
 export * from "./errorResponseDto";
 export * from "./errorResponseDtoMeta";
+export * from "./escalarDto";
+export * from "./escaleraResponseDto";
 export * from "./guardarPosicionesDto";
 export * from "./liberaResponseDto";
 export * from "./nodoResponseDto";
@@ -29,12 +39,14 @@ export * from "./nodoResumenDto";
 export * from "./nodoResumenDtoEstado";
 export * from "./nodoResumenDtoTipo";
 export * from "./nodosControllerFindAllEstado";
+export * from "./nodosControllerFindAllNotas";
 export * from "./nodosControllerFindAllParams";
 export * from "./nodosControllerFindAllTipo";
 export * from "./paginaNodosDto";
 export * from "./posicionNodoDto";
 export * from "./ramaResponseDto";
 export * from "./ramaResponseDtoEstado";
+export * from "./ritualResponseDto";
 export * from "./rolesResponseDto";
 export * from "./rolResponseDto";
 export * from "./updateNodoDto";

@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { NodosControllerFindAllEstado } from "./nodosControllerFindAllEstado";
+import type { NodosControllerFindAllNotas } from "./nodosControllerFindAllNotas";
 import type { NodosControllerFindAllTipo } from "./nodosControllerFindAllTipo";
 
 export type NodosControllerFindAllParams = {
@@ -29,6 +30,10 @@ export type NodosControllerFindAllParams = {
    * Solo los nodos de este rol (GET /roles): llevan su etiqueta; los del defecto, la de ningún otro
    */
   rol?: string;
+  /**
+   * ocultar = sin los complementos que son notas (dolor, apunte, decisión…): el tablero
+   */
+  notas?: NodosControllerFindAllNotas;
   /**
    * Solo los nodos que PERTENECEN_A esta rama
    */

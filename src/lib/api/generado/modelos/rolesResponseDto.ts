@@ -5,6 +5,7 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
+import type { ComplementoDeCatalogoDto } from "./complementoDeCatalogoDto";
 import type { RolResponseDto } from "./rolResponseDto";
 
 export interface RolesResponseDto {
@@ -14,4 +15,6 @@ export interface RolesResponseDto {
    */
   defecto: string | null;
   roles: RolResponseDto[];
+  /** Lo que puede colgar de un PBI (FASE 9) */
+  complementos: ComplementoDeCatalogoDto[];
 }
