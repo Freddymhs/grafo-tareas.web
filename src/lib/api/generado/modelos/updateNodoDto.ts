@@ -11,6 +11,17 @@ export interface UpdateNodoDto {
   titulo?: string;
   descripcion?: string;
   estado?: UpdateNodoDtoEstado;
+  /** Columna del tablero: una de GET /etapas. Sin etapa = entrada */
+  etapa?: string;
+  etiquetas?: string[];
+  /**
+   * 1 = la más urgente
+   * @minimum 1
+   * @maximum 4
+   */
+  prioridad?: number;
+  /** Fecha YYYY-MM-DD */
+  vence?: string;
   /** Solo para nodos RAMA */
   color?: string;
 }

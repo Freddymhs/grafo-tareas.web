@@ -16,6 +16,13 @@ export interface NodoResponseDto {
   /** @nullable */
   color?: string | null;
   /** @nullable */
+  etapa?: string | null;
+  etiquetas: string[];
+  /** @nullable */
+  prioridad?: number | null;
+  /** @nullable */
+  vence?: string | null;
+  /** @nullable */
   descripcion?: string | null;
   /** @nullable */
   externoOrigen?: string | null;

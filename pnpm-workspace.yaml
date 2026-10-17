@@ -1,0 +1,6 @@
+# pnpm 10: en CI, un paquete con scripts de instalación no aprobado es ERR_PNPM_IGNORED_BUILDS (medido 2026-10-17).
+# Estos tres los necesitan Next (sharp, unrs-resolver) y Vitest/Orval (esbuild). Nada más corre scripts al instalar.
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - unrs-resolver

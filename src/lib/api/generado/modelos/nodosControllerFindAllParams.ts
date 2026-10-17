@@ -19,4 +19,13 @@ export type NodosControllerFindAllParams = {
   limit?: number;
   tipo?: NodosControllerFindAllTipo;
   estado?: NodosControllerFindAllEstado;
+  /**
+   * Columna del tablero; vacía ("") = sin etapa
+   */
+  etapa?: string;
+  etiqueta?: string;
+  /**
+   * Busca en título y descripción, sin distinguir mayúsculas
+   */
+  q?: string;
 };

@@ -15,4 +15,11 @@ export interface NodoResumenDto {
   estado: NodoResumenDtoEstado;
   /** @nullable */
   color?: string | null;
+  /** @nullable */
+  etapa?: string | null;
+  etiquetas: string[];
+  /** @nullable */
+  prioridad?: number | null;
+  /** @nullable */
+  vence?: string | null;
 }
