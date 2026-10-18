@@ -13,6 +13,7 @@ import { UpdateNodoDtoEstado } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
 import { ComplementosNodo } from "@/components/complementos-nodo";
 import { ConexionesNodo } from "@/components/conexiones-nodo";
+import { BotonMoverCara } from "@/components/mover-cara";
 import { Descripcion } from "@/components/descripcion";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { ESTILO_BOTON, ESTILO_CAMPO, ETAPA_ENTRADA, TIPOS_TABLERO } from "@/lib/constants";
@@ -96,6 +97,7 @@ export function NodoDetalle({ id }: { id: string }) {
             >
               {cerrado ? "Reabrir" : "Cerrar"}
             </button>
+            <BotonMoverCara id={id} cara={n.cara} className={ESTILO_BOTON} />
             {actualizar.isError ? (
               <p className="text-sm text-red-600">{actualizar.error.message}</p>
             ) : null}

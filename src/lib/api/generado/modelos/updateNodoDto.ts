@@ -5,12 +5,15 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
+import type { UpdateNodoDtoCara } from "./updateNodoDtoCara";
 import type { UpdateNodoDtoEstado } from "./updateNodoDtoEstado";
 
 export interface UpdateNodoDto {
   titulo?: string;
   descripcion?: string;
   estado?: UpdateNodoDtoEstado;
+  /** De qué cara de su HU es (FASE 17): REAL = lo que se trabaja; PLAN = lo que se intuyó (Draft trabajo) */
+  cara?: UpdateNodoDtoCara;
   etiquetas?: string[];
   /**
    * 1 = la más urgente
@@ -27,4 +30,6 @@ export interface UpdateNodoDto {
    * @nullable
    */
   etapa?: string | null;
+  /** @nullable */
+  motivo?: string | null;
 }

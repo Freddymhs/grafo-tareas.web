@@ -5,6 +5,7 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
+import type { ComplementoResponseDtoCara } from "./complementoResponseDtoCara";
 import type { ComplementoResponseDtoEstado } from "./complementoResponseDtoEstado";
 import type { ComplementoResponseDtoTipo } from "./complementoResponseDtoTipo";
 
@@ -13,6 +14,7 @@ export interface ComplementoResponseDto {
   tipo: ComplementoResponseDtoTipo;
   titulo: string;
   estado: ComplementoResponseDtoEstado;
+  cara: ComplementoResponseDtoCara;
   /** @nullable */
   color?: string | null;
   /** @nullable */
@@ -34,6 +36,8 @@ export interface ComplementoResponseDto {
   posY?: number | null;
   /** @nullable */
   posZ?: number | null;
+  /** Cuándo nació en su fuente (la tarjeta en Todoist) o, si se creó acá, al crearse. Nunca vacía */
+  fechaOrigen: string;
   createdAt: string;
   updatedAt: string;
   /** La clave del catálogo (sale de su etiqueta complemento:<clave>) */

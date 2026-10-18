@@ -5,6 +5,7 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
+import type { CreateNodoDtoCara } from "./createNodoDtoCara";
 import type { CreateNodoDtoEstado } from "./createNodoDtoEstado";
 import type { CreateNodoDtoTipo } from "./createNodoDtoTipo";
 
@@ -13,6 +14,8 @@ export interface CreateNodoDto {
   titulo: string;
   descripcion?: string;
   estado?: CreateNodoDtoEstado;
+  /** De qué cara de su HU es (FASE 17): REAL = lo que se trabaja; PLAN = lo que se intuyó (Draft trabajo) */
+  cara?: CreateNodoDtoCara;
   /** Columna del tablero: una de GET /etapas. Sin etapa = entrada */
   etapa?: string;
   etiquetas?: string[];

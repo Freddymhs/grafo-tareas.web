@@ -5,6 +5,7 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
+import type { NodosControllerFindAllCara } from "./nodosControllerFindAllCara";
 import type { NodosControllerFindAllEstado } from "./nodosControllerFindAllEstado";
 import type { NodosControllerFindAllNotas } from "./nodosControllerFindAllNotas";
 import type { NodosControllerFindAllTipo } from "./nodosControllerFindAllTipo";
@@ -21,6 +22,10 @@ export type NodosControllerFindAllParams = {
   limit?: number;
   tipo?: NodosControllerFindAllTipo;
   estado?: NodosControllerFindAllEstado;
+  /**
+   * Solo los de esta cara de su HU (FASE 17): REAL = el trabajo, PLAN = el Draft
+   */
+  cara?: NodosControllerFindAllCara;
   /**
    * Columna del tablero; vacía ("") = sin etapa
    */

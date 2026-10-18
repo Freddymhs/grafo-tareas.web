@@ -7,6 +7,7 @@ const nodo = (titulo: string): NodoResumenDto => ({
   tipo: "TAREA",
   titulo,
   estado: "ABIERTO",
+  cara: "REAL",
   color: null,
   etapa: null,
   etiquetas: [],

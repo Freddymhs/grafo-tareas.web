@@ -5,6 +5,7 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
+import type { NodoResumenDtoCara } from "./nodoResumenDtoCara";
 import type { NodoResumenDtoEstado } from "./nodoResumenDtoEstado";
 import type { NodoResumenDtoTipo } from "./nodoResumenDtoTipo";
 
@@ -13,6 +14,7 @@ export interface NodoResumenDto {
   tipo: NodoResumenDtoTipo;
   titulo: string;
   estado: NodoResumenDtoEstado;
+  cara: NodoResumenDtoCara;
   /** @nullable */
   color?: string | null;
   /** @nullable */

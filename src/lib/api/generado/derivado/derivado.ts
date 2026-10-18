@@ -23,8 +23,10 @@ import type {
   DerivadoControllerDiaParams,
   DiaResponseDto,
   ErrorResponseDto,
+  FamiliaResponseDto,
   LiberaResponseDto,
   NodoResumenDto,
+  PaginaDto,
 } from "../modelos";
 
 import { cliente } from "../../cliente";
@@ -309,6 +311,269 @@ export function useDerivadoControllerDia<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getDerivadoControllerDiaQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const getDerivadoControllerPaginasUrl = () => {
+  return `/api/v1/derivado/paginas`;
+};
+
+/**
+ * @summary Las páginas de la VR: una por HU (su árbol y lo que la bloquea) y «Sin HU» al final
+ */
+export const derivadoControllerPaginas = async (
+  options?: Parameters<typeof cliente>[1],
+): Promise<PaginaDto[]> => {
+  return cliente<PaginaDto[]>(getDerivadoControllerPaginasUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getDerivadoControllerPaginasQueryKey = () => {
+  return [`/api/v1/derivado/paginas`] as const;
+};
+
+export const getDerivadoControllerPaginasQueryOptions = <
+  TData = Awaited<ReturnType<typeof derivadoControllerPaginas>>,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPaginas>>, TError, TData>
+  >;
+  request?: SecondParameter<typeof cliente>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getDerivadoControllerPaginasQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof derivadoControllerPaginas>>> = ({
+    signal,
+  }) => derivadoControllerPaginas({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof derivadoControllerPaginas>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type DerivadoControllerPaginasQueryResult = NonNullable<
+  Awaited<ReturnType<typeof derivadoControllerPaginas>>
+>;
+export type DerivadoControllerPaginasQueryError = unknown;
+
+export function useDerivadoControllerPaginas<
+  TData = Awaited<ReturnType<typeof derivadoControllerPaginas>>,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPaginas>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof derivadoControllerPaginas>>,
+          TError,
+          Awaited<ReturnType<typeof derivadoControllerPaginas>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useDerivadoControllerPaginas<
+  TData = Awaited<ReturnType<typeof derivadoControllerPaginas>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPaginas>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof derivadoControllerPaginas>>,
+          TError,
+          Awaited<ReturnType<typeof derivadoControllerPaginas>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useDerivadoControllerPaginas<
+  TData = Awaited<ReturnType<typeof derivadoControllerPaginas>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPaginas>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Las páginas de la VR: una por HU (su árbol y lo que la bloquea) y «Sin HU» al final
+ */
+
+export function useDerivadoControllerPaginas<
+  TData = Awaited<ReturnType<typeof derivadoControllerPaginas>>,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPaginas>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getDerivadoControllerPaginasQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const getDerivadoControllerFamiliaUrl = (id: string) => {
+  return `/api/v1/nodos/${id}/familia`;
+};
+
+/**
+ * @summary Lo que se ilumina al seleccionar un nodo en la VR: él, lo que cuelga de él y con qué se conecta directo
+ */
+export const derivadoControllerFamilia = async (
+  id: string,
+  options?: Parameters<typeof cliente>[1],
+): Promise<FamiliaResponseDto> => {
+  return cliente<FamiliaResponseDto>(getDerivadoControllerFamiliaUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getDerivadoControllerFamiliaQueryKey = (id: string) => {
+  return [`/api/v1/nodos/${id}/familia`] as const;
+};
+
+export const getDerivadoControllerFamiliaQueryOptions = <
+  TData = Awaited<ReturnType<typeof derivadoControllerFamilia>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerFamilia>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getDerivadoControllerFamiliaQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof derivadoControllerFamilia>>> = ({
+    signal,
+  }) => derivadoControllerFamilia(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerFamilia>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type DerivadoControllerFamiliaQueryResult = NonNullable<
+  Awaited<ReturnType<typeof derivadoControllerFamilia>>
+>;
+export type DerivadoControllerFamiliaQueryError = ErrorResponseDto;
+
+export function useDerivadoControllerFamilia<
+  TData = Awaited<ReturnType<typeof derivadoControllerFamilia>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerFamilia>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof derivadoControllerFamilia>>,
+          TError,
+          Awaited<ReturnType<typeof derivadoControllerFamilia>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useDerivadoControllerFamilia<
+  TData = Awaited<ReturnType<typeof derivadoControllerFamilia>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerFamilia>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof derivadoControllerFamilia>>,
+          TError,
+          Awaited<ReturnType<typeof derivadoControllerFamilia>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useDerivadoControllerFamilia<
+  TData = Awaited<ReturnType<typeof derivadoControllerFamilia>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerFamilia>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary Lo que se ilumina al seleccionar un nodo en la VR: él, lo que cuelga de él y con qué se conecta directo
+ */
+
+export function useDerivadoControllerFamilia<
+  TData = Awaited<ReturnType<typeof derivadoControllerFamilia>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerFamilia>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getDerivadoControllerFamiliaQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

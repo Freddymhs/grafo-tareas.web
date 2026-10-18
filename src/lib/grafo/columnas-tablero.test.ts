@@ -8,6 +8,7 @@ const nodo = (id: string, etapa: string | null): NodoResponseDto => ({
   tipo: "TAREA",
   titulo: id,
   estado: "ABIERTO",
+  cara: "REAL",
   color: null,
   etapa,
   etiquetas: [],
@@ -19,6 +20,7 @@ const nodo = (id: string, etapa: string | null): NodoResponseDto => ({
   posX: null,
   posY: null,
   posZ: null,
+  fechaOrigen: "2026-10-17T00:00:00.000Z",
   createdAt: "2026-10-17T00:00:00.000Z",
   updatedAt: "2026-10-17T00:00:00.000Z",
 });
