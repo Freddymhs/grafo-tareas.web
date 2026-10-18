@@ -20,7 +20,9 @@ import type {
 
 import type {
   BloqueadoResponseDto,
+  CarrilDto,
   DerivadoControllerDiaParams,
+  DerivadoControllerPlanParams,
   DiaResponseDto,
   ErrorResponseDto,
   FamiliaResponseDto,
@@ -437,6 +439,151 @@ export function useDerivadoControllerPaginas<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getDerivadoControllerPaginasQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const getDerivadoControllerPlanUrl = (params?: DerivadoControllerPlanParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/v1/derivado/plan?${stringifiedParams}`
+    : `/api/v1/derivado/plan`;
+};
+
+/**
+ * @summary El tablero del plan: una columna por carril con sus piezas abiertas, en orden de ronda (?libro= una HU)
+ */
+export const derivadoControllerPlan = async (
+  params?: DerivadoControllerPlanParams,
+  options?: Parameters<typeof cliente>[1],
+): Promise<CarrilDto[]> => {
+  return cliente<CarrilDto[]>(getDerivadoControllerPlanUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getDerivadoControllerPlanQueryKey = (params?: DerivadoControllerPlanParams) => {
+  return [`/api/v1/derivado/plan`, ...(params ? [params] : [])] as const;
+};
+
+export const getDerivadoControllerPlanQueryOptions = <
+  TData = Awaited<ReturnType<typeof derivadoControllerPlan>>,
+  TError = unknown,
+>(
+  params?: DerivadoControllerPlanParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPlan>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getDerivadoControllerPlanQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof derivadoControllerPlan>>> = ({ signal }) =>
+    derivadoControllerPlan(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof derivadoControllerPlan>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type DerivadoControllerPlanQueryResult = NonNullable<
+  Awaited<ReturnType<typeof derivadoControllerPlan>>
+>;
+export type DerivadoControllerPlanQueryError = unknown;
+
+export function useDerivadoControllerPlan<
+  TData = Awaited<ReturnType<typeof derivadoControllerPlan>>,
+  TError = unknown,
+>(
+  params: undefined | DerivadoControllerPlanParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPlan>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof derivadoControllerPlan>>,
+          TError,
+          Awaited<ReturnType<typeof derivadoControllerPlan>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useDerivadoControllerPlan<
+  TData = Awaited<ReturnType<typeof derivadoControllerPlan>>,
+  TError = unknown,
+>(
+  params?: DerivadoControllerPlanParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPlan>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof derivadoControllerPlan>>,
+          TError,
+          Awaited<ReturnType<typeof derivadoControllerPlan>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useDerivadoControllerPlan<
+  TData = Awaited<ReturnType<typeof derivadoControllerPlan>>,
+  TError = unknown,
+>(
+  params?: DerivadoControllerPlanParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPlan>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary El tablero del plan: una columna por carril con sus piezas abiertas, en orden de ronda (?libro= una HU)
+ */
+
+export function useDerivadoControllerPlan<
+  TData = Awaited<ReturnType<typeof derivadoControllerPlan>>,
+  TError = unknown,
+>(
+  params?: DerivadoControllerPlanParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof derivadoControllerPlan>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getDerivadoControllerPlanQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

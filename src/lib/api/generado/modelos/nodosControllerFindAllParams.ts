@@ -27,6 +27,10 @@ export type NodosControllerFindAllParams = {
    */
   cara?: NodosControllerFindAllCara;
   /**
+   * Solo los nodos de esta HU (el libro de GET /derivado/paginas: el id de la HU, o «sin-hu»), en la cara pedida (por defecto REAL)
+   */
+  libro?: string;
+  /**
    * Columna del tablero; vacía ("") = sin etapa
    */
   etapa?: string;

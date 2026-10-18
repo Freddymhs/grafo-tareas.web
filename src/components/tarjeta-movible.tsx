@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { NodoResponseDto } from "@/lib/api/generado/modelos";
+import type { NodoResumenDto } from "@/lib/api/generado/modelos";
 import { useMoverCara } from "@/components/mover-cara";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 
@@ -9,7 +9,7 @@ import { TarjetaNodo } from "@/components/tarjeta-nodo";
  * Una tarjeta del tablero con el «Mover a» de Todoist (FASE 17): clic derecho → mover a la otra cara de su HU (del Plan
  * al Trabajo, o de vuelta). Las FASE no se mueven: son siempre trabajo real.
  */
-export function TarjetaMovible({ nodo }: { readonly nodo: NodoResponseDto }) {
+export function TarjetaMovible({ nodo }: { readonly nodo: NodoResumenDto }) {
   const [menuAbierto, abrirMenu] = useState(false);
   const { texto, moviendo, error, mover } = useMoverCara(nodo.id, nodo.cara);
 
