@@ -15,12 +15,12 @@ export const STALE_TIME_MS = 60_000;
 export const LIMITE_TABLERO = 500;
 
 /**
- * La columna de lo que no tiene etapa (en Todoist, las tareas "sin sección"). Se llamaba «Entrada» y no se entendía
- * (Freddy, FASE 11): ahora dice lo que es y por qué está.
+ * La columna de lo que no tiene etapa (en Todoist, las tareas "sin sección"). Se llamó «Entrada» y después «Sin etapa», y
+ * las dos confundían (Freddy, FASE 11 y 2026-10-18): dice qué son y qué hacer con ellas.
  */
-export const ETAPA_ENTRADA = "Sin etapa";
+export const ETAPA_ENTRADA = "Sin columna";
 export const QUE_SIN_ETAPA =
-  "llegó sin columna (de Todoist o del alta rápida): movela o colgala de su PBI";
+  "notas, preguntas y capturas sueltas: en Todoist no tienen sección. Movela a una columna o colgala de su PBI";
 export const QUE_OTRAS_ETAPAS = "en una columna de otro rol";
 
 /** El tablero por rol (FASE 8): «Todo» junta a todos; en el de un rol, lo que está en una etapa ajena va a «Otras etapas». */
