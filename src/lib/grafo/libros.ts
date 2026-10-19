@@ -4,6 +4,8 @@ export interface Libro {
   /** El libro de GET /derivado/paginas: el id de la HU, o «sin-hu». Es lo que va en `?libro=`. */
   readonly libro: string;
   readonly nombre: string;
+  /** El nodo HISTORIA del libro; `null` en «Sin HU». Lo que se crea parado en el libro pertenece a él. */
+  readonly historiaId: string | null;
 }
 
 /** «Todas» no es un libro: sin `?libro=` la API devuelve todo. */
@@ -21,11 +23,11 @@ export function librosDe(paginas: readonly PaginaDto[], cara: UpdateNodoDtoCara)
   const conLaCara = new Set(paginas.filter((p) => p.cara === cara).map(({ libro }) => libro));
   const vistos = new Set<string>();
   const libros: Libro[] = [];
-  for (const { libro, titulo } of paginas) {
+  for (const { libro, titulo, historiaId } of paginas) {
     const repetido = vistos.has(libro);
     if (repetido || !conLaCara.has(libro)) continue;
     vistos.add(libro);
-    libros.push({ libro, nombre: corto(titulo) });
+    libros.push({ libro, nombre: corto(titulo), historiaId });
   }
   return libros;
 }

@@ -23,13 +23,15 @@ const paginas = [
 describe("librosDe — los botones de HU del tablero (FASE 17)", () => {
   it("en el Trabajo, cada HU una vez, en el orden de las páginas, con su número", () => {
     expect(librosDe(paginas, REAL)).toEqual([
-      { libro: "hu-1", nombre: "HU 19565" },
-      { libro: "hu-2", nombre: "HU 20379" },
-      { libro: "sin-hu", nombre: "Sin HU" },
+      { libro: "hu-1", nombre: "HU 19565", historiaId: "hu-1" },
+      { libro: "hu-2", nombre: "HU 20379", historiaId: "hu-2" },
+      { libro: "sin-hu", nombre: "Sin HU", historiaId: null },
     ]);
   });
 
   it("en el Plan, solo las HU que tienen plan", () => {
-    expect(librosDe(paginas, PLAN)).toEqual([{ libro: "hu-2", nombre: "HU 20379" }]);
+    expect(librosDe(paginas, PLAN)).toEqual([
+      { libro: "hu-2", nombre: "HU 20379", historiaId: "hu-2" },
+    ]);
   });
 });

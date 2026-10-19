@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { useConexionesControllerCreate } from "@/lib/api/generado/conexiones/conexiones";
 import { useNodosControllerCreate } from "@/lib/api/generado/nodos/nodos";
-import type { CreateNodoDtoTipo } from "@/lib/api/generado/modelos";
+import { CreateConexionDtoTipo, type CreateNodoDtoTipo } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
+import type { Libro } from "@/lib/grafo/libros";
 import {
   ESTILO_BOTON,
   ESTILO_CAMPO,
@@ -18,18 +20,33 @@ const SIN_PRIORIDAD = "";
 
 /**
  * Alta rápida como la de Todoist: título, tipo, columna y prioridad; lo demás se edita en el detalle. Tipo, columna y
- * prioridad aparecen recién al escribir: en el teléfono el formulario entero ocupaba media pantalla (FASE 11).
+ * prioridad aparecen recién al escribir: en el teléfono el formulario entero ocupaba media pantalla (FASE 11). Parado en
+ * una HU, lo nuevo nace perteneciendo a ella: sin eso desaparecía del tablero filtrado (Freddy, 19-10).
  */
-export function CrearNodo({ etapas }: { etapas: readonly string[] }) {
+export function CrearNodo({
+  etapas,
+  libro,
+}: {
+  readonly etapas: readonly string[];
+  readonly libro: Libro | undefined;
+}) {
   const [titulo, setTitulo] = useState("");
   const [tipo, setTipo] = useState<CreateNodoDtoTipo>(TIPO_NODO_POR_DEFECTO);
   const [etapa, setEtapa] = useState(ETAPA_ENTRADA);
   const [prioridad, setPrioridad] = useState(SIN_PRIORIDAD);
   const invalidar = useInvalidarGrafo();
+  const historiaId = libro?.historiaId ?? null;
+  const enUnaHu = historiaId !== null;
+  const colgar = useConexionesControllerCreate({ mutation: { onSuccess: invalidar } });
   const crear = useNodosControllerCreate({
     mutation: {
-      onSuccess: () => {
+      onSuccess: ({ id }) => {
         setTitulo("");
+        if (enUnaHu) {
+          colgar.mutate({
+            data: { origenId: id, destinoId: historiaId, tipo: CreateConexionDtoTipo.PERTENECE_A },
+          });
+        }
         return invalidar();
       },
     },
@@ -56,7 +73,7 @@ export function CrearNodo({ etapas }: { etapas: readonly string[] }) {
       <input
         value={titulo}
         onChange={(evento) => setTitulo(evento.target.value)}
-        placeholder="Nueva tarea…"
+        placeholder={enUnaHu ? `Nueva tarea en ${libro?.nombre}…` : "Nueva tarea…"}
         aria-label="Título"
         className={`${ESTILO_CAMPO} min-w-0 flex-1 basis-64`}
       />
@@ -105,6 +122,12 @@ export function CrearNodo({ etapas }: { etapas: readonly string[] }) {
         </>
       ) : null}
       {crear.isError ? <p className="text-sm text-red-600">{crear.error.message}</p> : null}
+      {colgar.isError ? (
+        <p className="text-sm text-red-600">
+          Se creó, pero no quedó en {libro?.nombre}: {colgar.error.message}. Cuélgala desde su
+          detalle.
+        </p>
+      ) : null}
     </form>
   );
 }

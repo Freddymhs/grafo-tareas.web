@@ -14,7 +14,7 @@ import { CrearNodo } from "@/components/crear-nodo";
 import { TarjetaMovible } from "@/components/tarjeta-movible";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { columnasDelTablero } from "@/lib/grafo/columnas-tablero";
-import { librosDe, NOMBRE_TODAS, TODAS } from "@/lib/grafo/libros";
+import { librosDe, NOMBRE_TODAS, TODAS, type Libro } from "@/lib/grafo/libros";
 import { CARAS, NOMBRE_CARA } from "@/lib/grafo/mover-cara";
 import {
   API_URL,
@@ -74,8 +74,7 @@ export function Tablero() {
   const enPlan = cara === UpdateNodoDtoCara.PLAN;
   const libros = librosDe(paginas.data ?? [], cara);
   // Una HU elegida en una cara puede no tener la otra (la 19565 no tiene plan): se vuelve a «Todas».
-  const libro = libros.some(({ libro: l }) => l === libroElegido) ? libroElegido : TODAS;
-  const delLibro = libro === TODAS ? undefined : libro;
+  const elegido = libros.find(({ libro }) => libro === libroElegido);
 
   return (
     <div>
@@ -100,16 +99,16 @@ export function Tablero() {
           { clave: TODAS, nombre: NOMBRE_TODAS },
           ...libros.map(({ libro: clave, nombre }) => ({ clave, nombre })),
         ]}
-        elegida={libro}
+        elegida={elegido?.libro ?? TODAS}
         elegir={elegirLibro}
       />
-      {enPlan ? <TableroPlan libro={delLibro} /> : <TableroTrabajo libro={delLibro} />}
+      {enPlan ? <TableroPlan libro={elegido?.libro} /> : <TableroTrabajo libro={elegido} />}
     </div>
   );
 }
 
 /** El trabajo: tareas y FASE abiertas, una columna por etapa; por rol (?rol=) y por HU (?libro=), lo decide la API. */
-function TableroTrabajo({ libro }: { readonly libro: string | undefined }) {
+function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
   const [rolElegido, elegirRol] = useState<string>(ROL_TODO);
   const etapas = useEtapasControllerLista();
   const roles = useRolesControllerLista();
@@ -118,7 +117,7 @@ function TableroTrabajo({ libro }: { readonly libro: string | undefined }) {
     notas: OCULTAR_NOTAS,
     limit: LIMITE_TABLERO,
     cara: UpdateNodoDtoCara.REAL,
-    ...(libro ? { libro } : {}),
+    ...(libro ? { libro: libro.libro } : {}),
     ...(rolElegido === ROL_TODO ? {} : { rol: rolElegido }),
   };
   const tareas = useNodosControllerFindAll({ ...filtro, tipo: TAREA }, MANTENER);
@@ -153,7 +152,7 @@ function TableroTrabajo({ libro }: { readonly libro: string | undefined }) {
         <Pildoras etiqueta="Rol" opciones={opciones} elegida={rolElegido} elegir={elegirRol} />
       ) : null}
       {rol ? <p className="mb-3 text-sm text-gray-500">{rol.para}</p> : null}
-      <CrearNodo etapas={etapas.data} />
+      <CrearNodo etapas={etapas.data} libro={libro} />
       {/* El tablero entra en la pantalla: cada columna mide lo que tiene (items-start) y hace su propio scroll. */}
       <div className="flex items-start gap-3 overflow-x-auto pb-4">
         {columnas.map(({ nombre, que, nodos: tarjetas }) => (
