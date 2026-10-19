@@ -12,6 +12,7 @@ import {
 } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
 import { conexionesDelBloqueante, tituloDelBloqueante } from "@/lib/grafo/bloqueante";
+import { ETIQUETA_ESPERA } from "@/lib/grafo/espera";
 import { ESTILO_BOTON, ESTILO_CAMPO, LIMITE_TABLERO } from "@/lib/constants";
 
 /** Un bloqueante es urgente hasta que se contesta, como el `pendiente bloqueo` del adaptador. */
@@ -22,6 +23,8 @@ interface Bloqueante {
   readonly pregunta: string;
   readonly personaId: string;
   readonly personaNombre: string;
+  /** Ya se le pidió: queda esperando a que entregue o valide (`lib/grafo/espera.ts`). */
+  readonly yaPedido: boolean;
 }
 
 /**
@@ -37,6 +40,7 @@ export function AgregarBloqueante({
 }) {
   const [pregunta, setPregunta] = useState("");
   const [personaId, setPersonaId] = useState(SIN_PERSONA);
+  const [yaPedido, setYaPedido] = useState(false);
   const invalidar = useInvalidarGrafo();
   const personas = useNodosControllerFindAll({
     tipo: NodosControllerFindAllTipo.PERSONA,
@@ -44,18 +48,25 @@ export function AgregarBloqueante({
     limit: LIMITE_TABLERO,
   });
   const agregar = useMutation({
-    mutationFn: async ({ pregunta: texto, personaId: aQuien, personaNombre }: Bloqueante) => {
+    mutationFn: async ({
+      pregunta: texto,
+      personaId: aQuien,
+      personaNombre,
+      yaPedido: esperando,
+    }: Bloqueante) => {
       const duda = await nodosControllerCreate({
         tipo: CreateNodoDtoTipo.DUDA,
         titulo: tituloDelBloqueante(texto, personaNombre),
         cara,
         prioridad: PRIORIDAD_BLOQUEANTE,
+        ...(esperando ? { etiquetas: [ETIQUETA_ESPERA] } : {}),
       });
       const conexiones = conexionesDelBloqueante(duda.id, id, aQuien);
       await Promise.all(conexiones.map((conexion) => conexionesControllerCreate(conexion)));
     },
     onSuccess: () => {
       setPregunta("");
+      setYaPedido(false);
       return invalidar();
     },
   });
@@ -71,6 +82,7 @@ export function AgregarBloqueante({
       pregunta: pregunta.trim(),
       personaId: persona.id,
       personaNombre: persona.titulo,
+      yaPedido,
     });
   };
 
@@ -98,13 +110,22 @@ export function AgregarBloqueante({
             </option>
           ))}
         </select>
+        <label className="flex items-center gap-1 text-gray-700">
+          <input
+            type="checkbox"
+            checked={yaPedido}
+            onChange={(evento) => setYaPedido(evento.target.checked)}
+          />
+          Ya lo pedí: queda esperando
+        </label>
         <button type="submit" disabled={!listo || agregar.isPending} className={ESTILO_BOTON}>
           Agregar
         </button>
       </form>
       {agregar.isError ? <p className="text-sm text-red-600">{agregar.error.message}</p> : null}
       <p className="mt-1 text-xs text-gray-500">
-        La duda queda siendo de este nodo y lo frena hasta que se conteste.
+        La duda queda siendo de este nodo y lo frena hasta que se conteste. Si ya lo pediste, se ve
+        con ⏳ hasta que llegue.
       </p>
     </section>
   );

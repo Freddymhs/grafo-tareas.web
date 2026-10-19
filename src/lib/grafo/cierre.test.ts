@@ -6,6 +6,7 @@ import {
   type CambioResponseDto,
 } from "@/lib/api/generado/modelos";
 import { cierreDe, tituloConMarca } from "./cierre";
+import { ETIQUETA_ESPERA } from "./espera";
 
 const { DUDA, TAREA } = CreateNodoDtoTipo;
 const { ABIERTO, CERRADO } = UpdateNodoDtoEstado;
@@ -31,6 +32,12 @@ describe("tituloConMarca — una duda contestada se ve con ✓ (Freddy, 2026-10-
     expect(tituloConMarca({ tipo: DUDA, estado: CERRADO, titulo: "¿quién?" })).toBe("✓ ¿quién?");
     expect(tituloConMarca({ tipo: DUDA, estado: ABIERTO, titulo: "¿quién?" })).toBe("¿quién?");
     expect(tituloConMarca({ tipo: TAREA, estado: CERRADO, titulo: "hecha" })).toBe("hecha");
+  });
+
+  it("lo ya pedido que espera a otro lleva ⏳ mientras no llegue; al cerrarse, ✓ como toda duda", () => {
+    const espera = { tipo: DUDA, titulo: "la planilla", etiquetas: [ETIQUETA_ESPERA] };
+    expect(tituloConMarca({ ...espera, estado: ABIERTO })).toBe("⏳ la planilla");
+    expect(tituloConMarca({ ...espera, estado: CERRADO })).toBe("✓ la planilla");
   });
 });
 

@@ -20,6 +20,7 @@ import { Descripcion } from "@/components/descripcion";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { ESTILO_BOTON, ESTILO_CAMPO, ETAPA_ENTRADA, TIPOS_TABLERO } from "@/lib/constants";
 import { tituloConMarca } from "@/lib/grafo/cierre";
+import { esEsperaAbierta, etiquetasAlEsperar, etiquetasSinEspera } from "@/lib/grafo/espera";
 
 const [, FASE] = TIPOS_TABLERO;
 
@@ -40,6 +41,9 @@ export function NodoDetalle({ id }: { id: string }) {
   // Una duda o una persona no se frenan con otra duda: el bloqueante se agrega desde el trabajo que frena.
   const puedeTenerBloqueante =
     n.tipo !== CreateNodoDtoTipo.DUDA && n.tipo !== CreateNodoDtoTipo.PERSONA;
+  // Una duda abierta que ya se pidió pasa a esperar al otro (⏳); marcada por error, vuelve.
+  const esDudaAbierta = n.tipo === CreateNodoDtoTipo.DUDA && !cerrado;
+  const esperando = esEsperaAbierta(n);
   const porQue = bloqueado.data?.por ?? [];
   const liberados = [...(libera.data?.directos ?? []), ...(libera.data?.cadena ?? [])];
 
@@ -103,6 +107,25 @@ export function NodoDetalle({ id }: { id: string }) {
             >
               {cerrado ? "Reabrir" : "Cerrar"}
             </button>
+            {esDudaAbierta ? (
+              <button
+                type="button"
+                disabled={actualizar.isPending}
+                onClick={() =>
+                  actualizar.mutate({
+                    id,
+                    data: {
+                      etiquetas: esperando
+                        ? etiquetasSinEspera(n.etiquetas)
+                        : etiquetasAlEsperar(n.etiquetas),
+                    },
+                  })
+                }
+                className={ESTILO_BOTON}
+              >
+                {esperando ? "Ya no espera" : "Ya lo pedí: ⏳ esperando"}
+              </button>
+            ) : null}
             <BotonMoverCara id={id} cara={n.cara} className={ESTILO_BOTON} />
             {actualizar.isError ? (
               <p className="text-sm text-red-600">{actualizar.error.message}</p>
