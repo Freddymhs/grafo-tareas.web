@@ -11,12 +11,14 @@ import {
 } from "@/lib/api/generado/nodos/nodos";
 import { UpdateNodoDtoEstado } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
+import { CierreNodo } from "@/components/cierre-nodo";
 import { ComplementosNodo } from "@/components/complementos-nodo";
 import { ConexionesNodo } from "@/components/conexiones-nodo";
 import { BotonMoverCara } from "@/components/mover-cara";
 import { Descripcion } from "@/components/descripcion";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { ESTILO_BOTON, ESTILO_CAMPO, ETAPA_ENTRADA, TIPOS_TABLERO } from "@/lib/constants";
+import { tituloConMarca } from "@/lib/grafo/cierre";
 
 const [, FASE] = TIPOS_TABLERO;
 
@@ -45,7 +47,7 @@ export function NodoDetalle({ id }: { id: string }) {
           {n.prioridad ? ` · p${n.prioridad}` : ""}
           {n.vence ? ` · vence ${n.vence.slice(0, 10)}` : ""}
         </p>
-        <h1 className="mt-1 text-2xl font-bold [overflow-wrap:anywhere]">{n.titulo}</h1>
+        <h1 className="mt-1 text-2xl font-bold [overflow-wrap:anywhere]">{tituloConMarca(n)}</h1>
         {n.etiquetas.length > 0 ? (
           <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-gray-600">
             {n.etiquetas.map((etiqueta) => (
@@ -104,6 +106,8 @@ export function NodoDetalle({ id }: { id: string }) {
           </div>
         )}
       </header>
+
+      {cerrado ? <CierreNodo id={id} tipo={n.tipo} /> : null}
 
       {bloqueado.data?.bloqueado ? (
         <section className="rounded-xl border border-red-200 bg-red-50 p-4">

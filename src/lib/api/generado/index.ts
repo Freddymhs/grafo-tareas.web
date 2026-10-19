@@ -5,6 +5,7 @@ export * from "./derivado/derivado";
 export * from "./etapas/etapas";
 export * from "./health/health";
 export * from "./nodos/nodos";
+export * from "./piezas/piezas";
 export * from "./pulido/pulido";
 export * from "./ramas/ramas";
 export * from "./roles/roles";

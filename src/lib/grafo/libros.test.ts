@@ -11,6 +11,7 @@ const pagina = (libro: string, cara: UpdateNodoDtoCara, titulo: string): PaginaD
   historiaId: libro === "sin-hu" ? null : libro,
   nodos: [],
   abiertas: 0,
+  frenan: [],
 });
 
 const paginas = [

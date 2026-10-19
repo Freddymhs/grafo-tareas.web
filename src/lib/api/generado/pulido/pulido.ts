@@ -640,3 +640,140 @@ export function usePulidoControllerCambios<
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+export const getPulidoControllerCambiosDeUrl = (id: string) => {
+  return `/api/v1/nodos/${id}/cambios`;
+};
+
+/**
+ * @summary La bitácora de un nodo, lo más reciente primero: con qué motivo se cerró, se editó o se movió
+ */
+export const pulidoControllerCambiosDe = async (
+  id: string,
+  options?: Parameters<typeof cliente>[1],
+): Promise<CambioResponseDto[]> => {
+  return cliente<CambioResponseDto[]>(getPulidoControllerCambiosDeUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getPulidoControllerCambiosDeQueryKey = (id: string) => {
+  return [`/api/v1/nodos/${id}/cambios`] as const;
+};
+
+export const getPulidoControllerCambiosDeQueryOptions = <
+  TData = Awaited<ReturnType<typeof pulidoControllerCambiosDe>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof pulidoControllerCambiosDe>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPulidoControllerCambiosDeQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof pulidoControllerCambiosDe>>> = ({
+    signal,
+  }) => pulidoControllerCambiosDe(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof pulidoControllerCambiosDe>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
+
+export type PulidoControllerCambiosDeQueryResult = NonNullable<
+  Awaited<ReturnType<typeof pulidoControllerCambiosDe>>
+>;
+export type PulidoControllerCambiosDeQueryError = ErrorResponseDto;
+
+export function usePulidoControllerCambiosDe<
+  TData = Awaited<ReturnType<typeof pulidoControllerCambiosDe>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof pulidoControllerCambiosDe>>, TError, TData>
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof pulidoControllerCambiosDe>>,
+          TError,
+          Awaited<ReturnType<typeof pulidoControllerCambiosDe>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePulidoControllerCambiosDe<
+  TData = Awaited<ReturnType<typeof pulidoControllerCambiosDe>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof pulidoControllerCambiosDe>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof pulidoControllerCambiosDe>>,
+          TError,
+          Awaited<ReturnType<typeof pulidoControllerCambiosDe>>
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePulidoControllerCambiosDe<
+  TData = Awaited<ReturnType<typeof pulidoControllerCambiosDe>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof pulidoControllerCambiosDe>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * @summary La bitácora de un nodo, lo más reciente primero: con qué motivo se cerró, se editó o se movió
+ */
+
+export function usePulidoControllerCambiosDe<
+  TData = Awaited<ReturnType<typeof pulidoControllerCambiosDe>>,
+  TError = ErrorResponseDto,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof pulidoControllerCambiosDe>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPulidoControllerCambiosDeQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}

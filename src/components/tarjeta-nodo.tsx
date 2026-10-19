@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { NodoResponseDto, NodoResumenDto } from "@/lib/api/generado/modelos";
 import { ESTADO_AVANCE, partesDeAvance, type EstadoAvance } from "@/lib/grafo/avance";
+import { tituloConMarca } from "@/lib/grafo/cierre";
 import { PRIORIDAD_VISIBLE_MAXIMA, TIPOS_TABLERO } from "@/lib/constants";
 
 type Nodo = NodoResumenDto | NodoResponseDto;
@@ -52,7 +53,7 @@ export function TarjetaNodo({ nodo }: { nodo: Nodo }) {
       <p
         className={`text-gray-900 [overflow-wrap:anywhere] ${esFase ? "font-semibold" : "font-medium"}`}
       >
-        {nodo.titulo}
+        {tituloConMarca(nodo)}
       </p>
       {lineaDeAvance ? <Avance linea={lineaDeAvance} /> : null}
       {!esFase && (prioridadVisible || nodo.etiquetas.length > 0 || nodo.vence) ? (

@@ -30,6 +30,7 @@ export * from "./createNodoDto";
 export * from "./createNodoDtoCara";
 export * from "./createNodoDtoEstado";
 export * from "./createNodoDtoTipo";
+export * from "./createPiezaDto";
 export * from "./createRamaDto";
 export * from "./decidirDto";
 export * from "./derivadoControllerDiaParams";
