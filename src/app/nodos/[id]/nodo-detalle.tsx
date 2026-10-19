@@ -9,8 +9,9 @@ import {
   useNodosControllerFindOne,
   useNodosControllerUpdate,
 } from "@/lib/api/generado/nodos/nodos";
-import { UpdateNodoDtoEstado } from "@/lib/api/generado/modelos";
+import { CreateNodoDtoTipo, UpdateNodoDtoEstado } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
+import { AgregarBloqueante } from "@/components/agregar-bloqueante";
 import { CierreNodo } from "@/components/cierre-nodo";
 import { ComplementosNodo } from "@/components/complementos-nodo";
 import { ConexionesNodo } from "@/components/conexiones-nodo";
@@ -36,6 +37,9 @@ export function NodoDetalle({ id }: { id: string }) {
   const cerrado = n.estado === UpdateNodoDtoEstado.CERRADO;
   // D10: la FASE se mueve tildando su FASE_n.md (el hook y `importar:fases`); acá solo se ve y se conecta.
   const soloLectura = n.tipo === FASE;
+  // Una duda o una persona no se frenan con otra duda: el bloqueante se agrega desde el trabajo que frena.
+  const puedeTenerBloqueante =
+    n.tipo !== CreateNodoDtoTipo.DUDA && n.tipo !== CreateNodoDtoTipo.PERSONA;
   const porQue = bloqueado.data?.por ?? [];
   const liberados = [...(libera.data?.directos ?? []), ...(libera.data?.cadena ?? [])];
 
@@ -130,6 +134,8 @@ export function NodoDetalle({ id }: { id: string }) {
       ) : null}
 
       <ComplementosNodo id={id} />
+
+      {puedeTenerBloqueante ? <AgregarBloqueante id={id} cara={n.cara} /> : null}
 
       <ConexionesNodo id={id} />
 
