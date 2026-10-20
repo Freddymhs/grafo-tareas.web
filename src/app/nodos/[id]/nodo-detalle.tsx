@@ -158,7 +158,7 @@ export function NodoDetalle({ id }: { id: string }) {
 
       <ComplementosNodo id={id} />
 
-      {puedeTenerBloqueante ? <AgregarBloqueante id={id} cara={n.cara} /> : null}
+      {puedeTenerBloqueante ? <AgregarBloqueante id={id} /> : null}
 
       <ConexionesNodo id={id} />
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { CreateConexionDtoTipo } from "@/lib/api/generado/modelos";
-import { conexionesDelBloqueante, tituloDelBloqueante } from "./bloqueante";
+import type { ComplementoDeCatalogoDto } from "@/lib/api/generado/modelos";
+import { tiposDeBloqueante, tituloDelBloqueante } from "./bloqueante";
 
 describe("tituloDelBloqueante — la duda dice a quién espera, como las demás del grafo", () => {
   it("antepone «Para <persona>:» a la pregunta", () => {
@@ -16,16 +16,18 @@ describe("tituloDelBloqueante — la duda dice a quién espera, como las demás 
   });
 });
 
-describe("conexionesDelBloqueante — creado desde lo que frena, nunca sin dueño (Freddy, 2026-10-19)", () => {
-  it("la duda espera a la persona, pertenece a lo que frena y eso queda bloqueado por ella", () => {
-    expect(conexionesDelBloqueante("duda", "pbi", "carabantes")).toEqual([
-      {
-        origenId: "duda",
-        destinoId: "carabantes",
-        tipo: CreateConexionDtoTipo.ESPERA_RESPUESTA_DE,
-      },
-      { origenId: "duda", destinoId: "pbi", tipo: CreateConexionDtoTipo.PERTENECE_A },
-      { origenId: "pbi", destinoId: "duda", tipo: CreateConexionDtoTipo.BLOQUEADA_POR },
+describe("tiposDeBloqueante — lo que el catálogo deja colgar como bloqueante (Freddy, 2026-10-19)", () => {
+  const catalogo = [
+    { clave: "duda-negocio", nombre: "Duda de negocio", nodo: "DUDA" },
+    { clave: "apunte", nombre: "Apunte de dominio", nodo: "TAREA" },
+    { clave: "espera", nombre: "Esperando a otro (ya pedido)", nodo: "DUDA" },
+    { clave: "para-decir", nombre: "Para decir", nodo: "DAILY_ITEM" },
+  ] as ComplementoDeCatalogoDto[];
+
+  it("solo los que nacen como DUDA, porque son los que frenan; en el orden del catálogo", () => {
+    expect(tiposDeBloqueante(catalogo).map(({ clave }) => clave)).toEqual([
+      "duda-negocio",
+      "espera",
     ]);
   });
 });

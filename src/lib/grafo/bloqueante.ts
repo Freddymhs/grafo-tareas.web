@@ -1,9 +1,10 @@
-import { CreateConexionDtoTipo, type CreateConexionDto } from "@/lib/api/generado/modelos";
+import type { ComplementoDeCatalogoDto } from "@/lib/api/generado/modelos";
+import { NODO_DUDA } from "@/lib/constants";
 
 /**
- * Un bloqueante se crea desde lo que frena, en una sola acción (Freddy, 2026-10-19: «las cosas que voy a usar día a día
- * van a ser bastante repetitivas»). Así nunca nace sin dueño: una duda suelta cae en «Sin HU» y no se ve donde se trabaja.
- * La duda va en la cara de lo que frena, y la VR la muestra ahí (la API la ubica por su PERTENECE_A). Puro.
+ * Un bloqueante se crea desde lo que frena, en una sola llamada (Freddy, 2026-10-19: «las cosas que voy a usar día a día
+ * van a ser bastante repetitivas»): `POST /nodos/:id/complementos` con su persona. La API lo cuelga de su dueño, lo deja
+ * frenándolo y esperando a la persona en un solo commit, en la cara del dueño: nunca nace sin dueño ni a medias. Puro.
  */
 const PREFIJO = "Para ";
 
@@ -13,15 +14,9 @@ export function tituloDelBloqueante(pregunta: string, persona: string): string {
   return yaDiceAQuien ? pregunta : `${PREFIJO}${persona}: ${pregunta}`;
 }
 
-/** La duda espera a la persona, pertenece a lo que frena (su dueño) y eso queda bloqueado por ella. */
-export function conexionesDelBloqueante(
-  dudaId: string,
-  frenadoId: string,
-  personaId: string,
-): CreateConexionDto[] {
-  return [
-    { origenId: dudaId, destinoId: personaId, tipo: CreateConexionDtoTipo.ESPERA_RESPUESTA_DE },
-    { origenId: dudaId, destinoId: frenadoId, tipo: CreateConexionDtoTipo.PERTENECE_A },
-    { origenId: frenadoId, destinoId: dudaId, tipo: CreateConexionDtoTipo.BLOQUEADA_POR },
-  ];
+/** Lo que se puede colgar como bloqueante: los complementos que nacen como DUDA (frenan), en el orden del catálogo. */
+export function tiposDeBloqueante(
+  catalogo: readonly ComplementoDeCatalogoDto[],
+): ComplementoDeCatalogoDto[] {
+  return catalogo.filter(({ nodo }) => nodo === NODO_DUDA);
 }

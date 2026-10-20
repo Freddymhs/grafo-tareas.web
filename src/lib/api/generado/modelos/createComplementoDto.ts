@@ -13,4 +13,12 @@ export interface CreateComplementoDto {
   descripcion?: string;
   /** Para un complemento DAILY_ITEM («para decir»): en qué ritual de GET /area se dice */
   ritual?: string;
+  /** A quién espera (una PERSONA): queda ESPERA_RESPUESTA_DE en la misma llamada. Un bloqueante nace entero, sin tres pedidos */
+  personaId?: string;
+  /**
+   * 1 = la más urgente
+   * @minimum 1
+   * @maximum 4
+   */
+  prioridad?: number;
 }
