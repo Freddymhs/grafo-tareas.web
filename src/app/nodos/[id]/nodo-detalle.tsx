@@ -5,6 +5,7 @@ import {
   useDerivadoControllerLibera,
 } from "@/lib/api/generado/derivado/derivado";
 import { useEtapasControllerLista } from "@/lib/api/generado/etapas/etapas";
+import { useRolesControllerLista } from "@/lib/api/generado/roles/roles";
 import {
   useNodosControllerFindOne,
   useNodosControllerUpdate,
@@ -17,9 +18,11 @@ import { ComplementosNodo } from "@/components/complementos-nodo";
 import { ConexionesNodo } from "@/components/conexiones-nodo";
 import { BotonMoverCara } from "@/components/mover-cara";
 import { Descripcion } from "@/components/descripcion";
+import { SelectorEtapa } from "@/components/selector-etapa";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
-import { ESTILO_BOTON, ESTILO_CAMPO, ETAPA_ENTRADA, TIPOS_TABLERO } from "@/lib/constants";
+import { ESTILO_BOTON, ETAPA_ENTRADA, TIPOS_TABLERO } from "@/lib/constants";
 import { tituloConMarca } from "@/lib/grafo/cierre";
+import { gruposDeEtapas } from "@/lib/grafo/grupos-de-etapas";
 import { esEsperaAbierta, etiquetasAlEsperar, etiquetasSinEspera } from "@/lib/grafo/espera";
 
 const [, FASE] = TIPOS_TABLERO;
@@ -29,6 +32,7 @@ export function NodoDetalle({ id }: { id: string }) {
   const bloqueado = useDerivadoControllerBloqueado(id);
   const libera = useDerivadoControllerLibera(id);
   const etapas = useEtapasControllerLista();
+  const roles = useRolesControllerLista();
   const invalidar = useInvalidarGrafo();
   const actualizar = useNodosControllerUpdate({ mutation: { onSuccess: invalidar } });
 
@@ -72,26 +76,14 @@ export function NodoDetalle({ id }: { id: string }) {
           </p>
         ) : (
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <select
-              value={n.etapa ?? ETAPA_ENTRADA}
-              onChange={(evento) =>
-                actualizar.mutate({
-                  id,
-                  data: {
-                    etapa: evento.target.value === ETAPA_ENTRADA ? null : evento.target.value,
-                  },
-                })
+            <SelectorEtapa
+              grupos={gruposDeEtapas(etapas.data ?? [], roles.data?.roles ?? [], null)}
+              valor={n.etapa ?? ETAPA_ENTRADA}
+              cambiar={(etapa) =>
+                actualizar.mutate({ id, data: { etapa: etapa === ETAPA_ENTRADA ? null : etapa } })
               }
-              disabled={actualizar.isPending || !etapas.isSuccess}
-              aria-label="Etapa"
-              className={ESTILO_CAMPO}
-            >
-              {[ETAPA_ENTRADA, ...(etapas.data ?? [])].map((etapa) => (
-                <option key={etapa} value={etapa}>
-                  {etapa}
-                </option>
-              ))}
-            </select>
+              deshabilitado={actualizar.isPending || !etapas.isSuccess}
+            />
             <button
               type="button"
               disabled={actualizar.isPending}

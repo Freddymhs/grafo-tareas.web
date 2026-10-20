@@ -6,7 +6,9 @@ import { useConexionesControllerCreate } from "@/lib/api/generado/conexiones/con
 import { useNodosControllerCreate } from "@/lib/api/generado/nodos/nodos";
 import { CreateConexionDtoTipo, type CreateNodoDtoTipo } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
+import type { GrupoDeEtapas } from "@/lib/grafo/grupos-de-etapas";
 import type { Libro } from "@/lib/grafo/libros";
+import { SelectorEtapa } from "@/components/selector-etapa";
 import {
   ESTILO_BOTON,
   ESTILO_CAMPO,
@@ -21,13 +23,14 @@ const SIN_PRIORIDAD = "";
 /**
  * Alta rápida como la de Todoist: título, tipo, columna y prioridad; lo demás se edita en el detalle. Tipo, columna y
  * prioridad aparecen recién al escribir: en el teléfono el formulario entero ocupaba media pantalla (FASE 11). Parado en
- * una HU, lo nuevo nace perteneciendo a ella: sin eso desaparecía del tablero filtrado (Freddy, 19-10).
+ * una HU, lo nuevo nace perteneciendo a ella: sin eso desaparecía del tablero filtrado (Freddy, 19-10). Las columnas
+ * vienen agrupadas por rol, y con un rol elegido arriba, solo las suyas (Freddy, 20-10).
  */
 export function CrearNodo({
-  etapas,
+  grupos,
   libro,
 }: {
-  readonly etapas: readonly string[];
+  readonly grupos: readonly GrupoDeEtapas[];
   readonly libro: Libro | undefined;
 }) {
   const [titulo, setTitulo] = useState("");
@@ -53,6 +56,10 @@ export function CrearNodo({
   });
 
   const escribiendo = titulo.trim().length > 0;
+  // Al cambiar de rol, la columna elegida puede no ser del rol nuevo: entonces vuelve a «Sin columna».
+  const etapaVigente = grupos.some(({ columnas }) => columnas.includes(etapa))
+    ? etapa
+    : ETAPA_ENTRADA;
 
   const enviar = (evento: FormEvent<HTMLFormElement>) => {
     evento.preventDefault();
@@ -62,7 +69,7 @@ export function CrearNodo({
       data: {
         tipo,
         titulo: tituloLimpio,
-        etapa: etapa === ETAPA_ENTRADA ? undefined : etapa,
+        etapa: etapaVigente === ETAPA_ENTRADA ? undefined : etapaVigente,
         prioridad: prioridad === SIN_PRIORIDAD ? undefined : Number(prioridad),
       },
     });
@@ -91,18 +98,7 @@ export function CrearNodo({
               </option>
             ))}
           </select>
-          <select
-            value={etapa}
-            onChange={(evento) => setEtapa(evento.target.value)}
-            aria-label="Etapa"
-            className={ESTILO_CAMPO}
-          >
-            {[ETAPA_ENTRADA, ...etapas].map((e) => (
-              <option key={e} value={e}>
-                {e}
-              </option>
-            ))}
-          </select>
+          <SelectorEtapa grupos={grupos} valor={etapaVigente} cambiar={setEtapa} />
           <select
             value={prioridad}
             onChange={(evento) => setPrioridad(evento.target.value)}

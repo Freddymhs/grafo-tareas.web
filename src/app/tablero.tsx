@@ -14,6 +14,7 @@ import { CrearNodo } from "@/components/crear-nodo";
 import { TarjetaMovible } from "@/components/tarjeta-movible";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { columnasDelTablero } from "@/lib/grafo/columnas-tablero";
+import { gruposDeEtapas } from "@/lib/grafo/grupos-de-etapas";
 import { librosDe, NOMBRE_TODAS, TODAS, type Libro } from "@/lib/grafo/libros";
 import { CARAS, NOMBRE_CARA } from "@/lib/grafo/mover-cara";
 import {
@@ -152,7 +153,10 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
         <Pildoras etiqueta="Rol" opciones={opciones} elegida={rolElegido} elegir={elegirRol} />
       ) : null}
       {rol ? <p className="mb-3 text-sm text-gray-500">{rol.para}</p> : null}
-      <CrearNodo etapas={etapas.data} libro={libro} />
+      <CrearNodo
+        grupos={gruposDeEtapas(etapas.data, roles.data.roles, rol?.clave ?? null)}
+        libro={libro}
+      />
       {/* El tablero entra en la pantalla: cada columna mide lo que tiene (items-start) y hace su propio scroll. */}
       <div className="flex items-start gap-3 overflow-x-auto pb-4">
         {columnas.map(({ nombre, que, nodos: tarjetas }) => (
