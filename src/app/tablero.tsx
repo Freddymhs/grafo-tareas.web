@@ -9,13 +9,17 @@ import {
 import { useEtapasControllerLista } from "@/lib/api/generado/etapas/etapas";
 import { useNodosControllerFindAll } from "@/lib/api/generado/nodos/nodos";
 import { useRolesControllerLista } from "@/lib/api/generado/roles/roles";
-import { UpdateNodoDtoCara, type NodosControllerFindAllParams } from "@/lib/api/generado/modelos";
+import {
+  CreateNodoDtoTipo,
+  UpdateNodoDtoCara,
+  type NodosControllerFindAllParams,
+} from "@/lib/api/generado/modelos";
 import { CrearNodo } from "@/components/crear-nodo";
 import { TarjetaMovible } from "@/components/tarjeta-movible";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { columnasDelTablero } from "@/lib/grafo/columnas-tablero";
 import { gruposDeEtapas } from "@/lib/grafo/grupos-de-etapas";
-import { textoDeBusqueda } from "@/lib/grafo/busqueda";
+import { buscaDudas, textoDeBusqueda } from "@/lib/grafo/busqueda";
 import { librosDe, NOMBRE_TODAS, TODAS, type Libro } from "@/lib/grafo/libros";
 import { CARAS, NOMBRE_CARA } from "@/lib/grafo/mover-cara";
 import {
@@ -134,7 +138,13 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
   };
   const tareas = useNodosControllerFindAll({ ...filtro, tipo: TAREA }, MANTENER);
   const fases = useNodosControllerFindAll({ ...filtro, tipo: FASE }, MANTENER);
-  const consultas = [etapas, roles, tareas, fases];
+  const conDudas = buscaDudas(buscado);
+  const dudas = useNodosControllerFindAll(
+    { ...filtro, tipo: CreateNodoDtoTipo.DUDA },
+    { query: { placeholderData: keepPreviousData, enabled: conDudas } },
+  );
+  // Apagada (sin búsqueda), la consulta de dudas queda «pending» para siempre: no cuenta para «Cargando».
+  const consultas = [etapas, roles, tareas, fases, ...(conDudas ? [dudas] : [])];
 
   if (consultas.some((consulta) => consulta.isPending))
     return <p className="text-gray-500">Cargando el tablero…</p>;
@@ -142,7 +152,8 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
     return <p className="text-red-600">No se pudo leer la API. ¿Está arriba en {API_URL}?</p>;
 
   const rol = roles.data.roles.find(({ clave }) => clave === rolElegido);
-  const nodos = [...fases.data.data, ...tareas.data.data];
+  const dudasBuscadas = conDudas ? (dudas.data?.data ?? []) : [];
+  const nodos = [...fases.data.data, ...tareas.data.data, ...dudasBuscadas];
   // Lo que significa cada columna, de roles.yaml: «AMARRAR 🧰» sola no se recuerda (Freddy, FASE 11). En la pestaña de
   // un rol, lo que dice ese rol; en «Todo», el primero que la declara (ENTENDIMIENTO es de varios y dice distinto).
   const declaradas = (rol ? [rol] : roles.data.roles)
