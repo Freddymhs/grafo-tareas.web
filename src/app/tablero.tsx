@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useDeferredValue, useState } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
 import {
   useDerivadoControllerPaginas,
@@ -15,10 +15,13 @@ import { TarjetaMovible } from "@/components/tarjeta-movible";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { columnasDelTablero } from "@/lib/grafo/columnas-tablero";
 import { gruposDeEtapas } from "@/lib/grafo/grupos-de-etapas";
+import { textoDeBusqueda } from "@/lib/grafo/busqueda";
 import { librosDe, NOMBRE_TODAS, TODAS, type Libro } from "@/lib/grafo/libros";
 import { CARAS, NOMBRE_CARA } from "@/lib/grafo/mover-cara";
 import {
   API_URL,
+  ESTILO_CAMPO,
+  LARGO_MAXIMO_BUSQUEDA,
   LIMITE_TABLERO,
   NOMBRE_ROL_TODO,
   OCULTAR_NOTAS,
@@ -108,9 +111,16 @@ export function Tablero() {
   );
 }
 
-/** El trabajo: tareas y FASE abiertas, una columna por etapa; por rol (?rol=) y por HU (?libro=), lo decide la API. */
+/**
+ * El trabajo: tareas y FASE abiertas, una columna por etapa; por rol (?rol=), por HU (?libro=) y por texto (?q=, título
+ * y descripción), lo decide la API. El buscador busca dentro de la HU y el rol elegidos (Freddy, 21-10: «para encontrar
+ * tarjetas más fácilmente»).
+ */
 function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
   const [rolElegido, elegirRol] = useState<string>(ROL_TODO);
+  const [escrito, escribir] = useState("");
+  // Mientras se escribe, el tablero de antes sigue a la vista: la consulta va con el texto diferido.
+  const buscado = textoDeBusqueda(useDeferredValue(escrito));
   const etapas = useEtapasControllerLista();
   const roles = useRolesControllerLista();
   const filtro: NodosControllerFindAllParams = {
@@ -120,6 +130,7 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
     cara: UpdateNodoDtoCara.REAL,
     ...(libro ? { libro: libro.libro } : {}),
     ...(rolElegido === ROL_TODO ? {} : { rol: rolElegido }),
+    ...(buscado ? { q: buscado } : {}),
   };
   const tareas = useNodosControllerFindAll({ ...filtro, tipo: TAREA }, MANTENER);
   const fases = useNodosControllerFindAll({ ...filtro, tipo: FASE }, MANTENER);
@@ -153,6 +164,22 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
         <Pildoras etiqueta="Rol" opciones={opciones} elegida={rolElegido} elegir={elegirRol} />
       ) : null}
       {rol ? <p className="mb-3 text-sm text-gray-500">{rol.para}</p> : null}
+      <input
+        type="search"
+        value={escrito}
+        onChange={(evento) => escribir(evento.target.value)}
+        placeholder="Buscar tarjetas…"
+        aria-label="Buscar tarjetas"
+        maxLength={LARGO_MAXIMO_BUSQUEDA}
+        className={`${ESTILO_CAMPO} mb-2 w-full`}
+      />
+      {buscado ? (
+        <p className="mb-3 text-sm text-gray-500">
+          {nodos.length === 0
+            ? `Nada abierto con «${buscado}». Lo cerrado no está en el tablero.`
+            : `${nodos.length} con «${buscado}» en el título o la descripción.`}
+        </p>
+      ) : null}
       <CrearNodo
         grupos={gruposDeEtapas(etapas.data, roles.data.roles, rol?.clave ?? null)}
         libro={libro}

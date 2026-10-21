@@ -14,8 +14,8 @@ import {
 import type { CreateConexionDtoTipo } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
 import { describirConexion } from "@/lib/grafo/describir-conexion";
+import { textoDeBusqueda } from "@/lib/grafo/busqueda";
 import {
-  LARGO_MINIMO_BUSQUEDA,
   LIMITE_BUSQUEDA,
   TEXTO_CONEXION,
   TIPO_CONEXION_POR_DEFECTO,
@@ -81,9 +81,10 @@ function ConectarNodo({ origenId }: { origenId: string }) {
   const [tipo, setTipo] = useState<CreateConexionDtoTipo>(TIPO_CONEXION_POR_DEFECTO);
   const [q, setQ] = useState("");
   const invalidar = useInvalidarGrafo();
-  const busquedaActiva = q.trim().length >= LARGO_MINIMO_BUSQUEDA;
+  const buscado = textoDeBusqueda(q);
+  const busquedaActiva = buscado !== null;
   const candidatos = useNodosControllerFindAll(
-    { q: q.trim(), limit: LIMITE_BUSQUEDA },
+    { q: buscado ?? "", limit: LIMITE_BUSQUEDA },
     { query: { enabled: busquedaActiva } },
   );
   const conectar = useConexionesControllerCreate({

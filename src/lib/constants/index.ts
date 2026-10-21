@@ -61,9 +61,11 @@ export const TEXTO_CONEXION: Record<CreateConexionDtoTipo, string> = {
 };
 export const TIPO_CONEXION_POR_DEFECTO = CreateConexionDtoTipo.DEPENDE_DE;
 
-/** Buscador para conectar: desde 2 letras, hasta 20 resultados. */
+/** Los buscadores (tablero y conectar): desde 2 letras; el de conectar, hasta 20 resultados. */
 export const LARGO_MINIMO_BUSQUEDA = 2;
 export const LIMITE_BUSQUEDA = 20;
+/** El tope de `q` en la API (LARGO_MAXIMO_BUSQUEDA de grafo.constants): más largo, la API responde 400. */
+export const LARGO_MAXIMO_BUSQUEDA = 200;
 
 /** Cuánto se muestra «Copiado» después de copiar el parte. */
 export const MS_AVISO_COPIADO = 2000;
