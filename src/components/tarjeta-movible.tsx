@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { NodoResumenDto } from "@/lib/api/generado/modelos";
+import type { NodoResumenDto, PelotitaDto } from "@/lib/api/generado/modelos";
 import { useMoverCara } from "@/components/mover-cara";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
-import type { Pelotita } from "@/lib/grafo/pelotitas";
 
 /**
  * Una tarjeta del tablero con el «Mover a» de Todoist (FASE 17): clic derecho → mover a la otra cara de su HU (del Plan
@@ -15,7 +14,7 @@ export function TarjetaMovible({
   pelotitas,
 }: {
   readonly nodo: NodoResumenDto;
-  readonly pelotitas?: readonly Pelotita[];
+  readonly pelotitas?: readonly PelotitaDto[];
 }) {
   const [menuAbierto, abrirMenu] = useState(false);
   const { texto, moviendo, error, mover } = useMoverCara(nodo.id, nodo.cara);

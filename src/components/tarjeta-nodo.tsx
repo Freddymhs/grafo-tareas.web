@@ -1,8 +1,7 @@
 import Link from "next/link";
-import type { NodoResponseDto, NodoResumenDto } from "@/lib/api/generado/modelos";
+import type { NodoResponseDto, NodoResumenDto, PelotitaDto } from "@/lib/api/generado/modelos";
 import { ESTADO_AVANCE, partesDeAvance, type EstadoAvance } from "@/lib/grafo/avance";
 import { tituloConMarca } from "@/lib/grafo/cierre";
-import type { Pelotita } from "@/lib/grafo/pelotitas";
 import { PRIORIDAD_VISIBLE_MAXIMA, TIPOS_TABLERO } from "@/lib/constants";
 
 type Nodo = NodoResumenDto | NodoResponseDto;
@@ -41,8 +40,8 @@ export function TarjetaNodo({
   pelotitas = [],
 }: {
   nodo: Nodo;
-  /** Solo en el Plan: su carril y los otros carriles que espera (`pelotitasDelPlan`). */
-  pelotitas?: readonly Pelotita[];
+  /** Solo en el Plan: su carril y los otros carriles que espera; las calcula la API (`GET /derivado/plan`). */
+  pelotitas?: readonly PelotitaDto[];
 }) {
   const cerrado = nodo.estado === "CERRADO";
   const esFase = nodo.tipo === FASE;
