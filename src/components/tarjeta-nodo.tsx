@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { NodoResponseDto, NodoResumenDto } from "@/lib/api/generado/modelos";
 import { ESTADO_AVANCE, partesDeAvance, type EstadoAvance } from "@/lib/grafo/avance";
 import { tituloConMarca } from "@/lib/grafo/cierre";
+import type { Pelotita } from "@/lib/grafo/pelotitas";
 import { PRIORIDAD_VISIBLE_MAXIMA, TIPOS_TABLERO } from "@/lib/constants";
 
 type Nodo = NodoResumenDto | NodoResponseDto;
@@ -35,7 +36,14 @@ function Avance({ linea }: { linea: string }) {
  * una FASE (una entrega con su task) va con borde índigo, su nombre y su avance como en fases.html; una tarea suelta,
  * con su título, prioridad, etiquetas y fecha.
  */
-export function TarjetaNodo({ nodo }: { nodo: Nodo }) {
+export function TarjetaNodo({
+  nodo,
+  pelotitas = [],
+}: {
+  nodo: Nodo;
+  /** Solo en el Plan: su carril y los otros carriles que espera (`pelotitasDelPlan`). */
+  pelotitas?: readonly Pelotita[];
+}) {
   const cerrado = nodo.estado === "CERRADO";
   const esFase = nodo.tipo === FASE;
   const lineaDeAvance =
@@ -53,6 +61,15 @@ export function TarjetaNodo({ nodo }: { nodo: Nodo }) {
       <p
         className={`text-gray-900 [overflow-wrap:anywhere] ${esFase ? "font-semibold" : "font-medium"}`}
       >
+        {pelotitas.map(({ carril, color }) => (
+          <span
+            key={carril}
+            title={carril}
+            aria-label={carril}
+            className="mr-1 inline-block size-2.5 rounded-full align-baseline"
+            style={{ backgroundColor: color }}
+          />
+        ))}
         {tituloConMarca(nodo)}
       </p>
       {lineaDeAvance ? <Avance linea={lineaDeAvance} /> : null}

@@ -1,15 +1,17 @@
 "use client";
 
-import { useDeferredValue, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
 import {
   useDerivadoControllerPaginas,
   useDerivadoControllerPlan,
 } from "@/lib/api/generado/derivado/derivado";
+import { useConexionesControllerFindAll } from "@/lib/api/generado/conexiones/conexiones";
 import { useEtapasControllerLista } from "@/lib/api/generado/etapas/etapas";
 import { useNodosControllerFindAll } from "@/lib/api/generado/nodos/nodos";
 import { useRolesControllerLista } from "@/lib/api/generado/roles/roles";
 import {
+  ConexionesControllerFindAllTipo,
   CreateNodoDtoTipo,
   UpdateNodoDtoCara,
   type NodosControllerFindAllParams,
@@ -22,6 +24,7 @@ import { gruposDeEtapas } from "@/lib/grafo/grupos-de-etapas";
 import { buscaDudas, textoDeBusqueda } from "@/lib/grafo/busqueda";
 import { librosDe, NOMBRE_TODAS, TODAS, type Libro } from "@/lib/grafo/libros";
 import { CARAS, NOMBRE_CARA } from "@/lib/grafo/mover-cara";
+import { pelotitasDelPlan } from "@/lib/grafo/pelotitas";
 import {
   API_URL,
   ESTILO_CAMPO,
@@ -223,6 +226,13 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
 /** El plan (el Draft): una columna por carril, sus piezas en orden de ronda (GET /derivado/plan). */
 function TableroPlan({ libro }: { readonly libro: string | undefined }) {
   const plan = useDerivadoControllerPlan(libro ? { libro } : undefined, MANTENER);
+  const dependencias = useConexionesControllerFindAll({
+    tipo: ConexionesControllerFindAllTipo.DEPENDE_DE,
+  });
+  const pelotitas = useMemo(
+    () => pelotitasDelPlan(plan.data ?? [], dependencias.data ?? []),
+    [plan.data, dependencias.data],
+  );
 
   if (plan.isPending) return <p className="text-gray-500">Cargando el plan…</p>;
   if (!plan.isSuccess)
@@ -234,8 +244,9 @@ function TableroPlan({ libro }: { readonly libro: string | undefined }) {
     <>
       <p className="mb-3 text-sm text-gray-500">
         El Draft: cada carril es una zona de código (dos personas no se pisan); las piezas, en orden
-        de ronda (1️⃣ cimiento, 2️⃣ paralelo, 3️⃣ cruce). Clic derecho en una tarjeta → «Mover a
-        Trabajo» cuando la tomas.
+        de ronda (1️⃣ cimiento, 2️⃣ paralelo, 3️⃣ cruce). La primera pelotita es su carril; las demás,
+        los otros carriles que espera. Clic derecho en una tarjeta → «Mover a Trabajo» cuando la
+        tomas.
       </p>
       <div className="flex items-start gap-3 overflow-x-auto pb-4">
         {plan.data.map(({ id, titulo, color, nodos }) => (
@@ -250,7 +261,7 @@ function TableroPlan({ libro }: { readonly libro: string | undefined }) {
             </h2>
             <div className="mt-3 min-h-0 space-y-2 overflow-y-auto">
               {nodos.map((nodo) => (
-                <TarjetaMovible key={nodo.id} nodo={nodo} />
+                <TarjetaMovible key={nodo.id} nodo={nodo} pelotitas={pelotitas.get(nodo.id)} />
               ))}
             </div>
           </section>

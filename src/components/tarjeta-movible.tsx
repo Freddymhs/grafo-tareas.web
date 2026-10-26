@@ -4,12 +4,19 @@ import { useState } from "react";
 import type { NodoResumenDto } from "@/lib/api/generado/modelos";
 import { useMoverCara } from "@/components/mover-cara";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
+import type { Pelotita } from "@/lib/grafo/pelotitas";
 
 /**
  * Una tarjeta del tablero con el «Mover a» de Todoist (FASE 17): clic derecho → mover a la otra cara de su HU (del Plan
  * al Trabajo, o de vuelta). Las FASE no se mueven: son siempre trabajo real.
  */
-export function TarjetaMovible({ nodo }: { readonly nodo: NodoResumenDto }) {
+export function TarjetaMovible({
+  nodo,
+  pelotitas,
+}: {
+  readonly nodo: NodoResumenDto;
+  readonly pelotitas?: readonly Pelotita[];
+}) {
   const [menuAbierto, abrirMenu] = useState(false);
   const { texto, moviendo, error, mover } = useMoverCara(nodo.id, nodo.cara);
 
@@ -21,7 +28,7 @@ export function TarjetaMovible({ nodo }: { readonly nodo: NodoResumenDto }) {
         abrirMenu(true);
       }}
     >
-      <TarjetaNodo nodo={nodo} />
+      <TarjetaNodo nodo={nodo} pelotitas={pelotitas} />
       {menuAbierto ? (
         <div
           role="menu"
