@@ -8,6 +8,7 @@ const nodo = (id: string, etapa: string | null): NodoResponseDto => ({
   tipo: "TAREA",
   titulo: id,
   estado: "ABIERTO",
+  proyectoId: "00000000-0000-4000-8000-000000000000",
   cara: "REAL",
   color: null,
   etapa,

@@ -1,8 +1,5 @@
-import {
-  CreateNodoDtoTipo,
-  UpdateNodoDtoEstado,
-  type CambioResponseDto,
-} from "@/lib/api/generado/modelos";
+import { TipoNodo } from "@/lib/constants";
+import { UpdateNodoDtoEstado, type CambioResponseDto } from "@/lib/api/generado/modelos";
 import { MARCA_ESPERA, esEsperaAbierta } from "./espera";
 
 /**
@@ -28,11 +25,11 @@ export function tituloConMarca({
   etiquetas,
 }: {
   readonly tipo: string;
-  readonly estado: string;
+  readonly estado: string | null;
   readonly titulo: string;
   readonly etiquetas?: readonly string[];
 }): string {
-  const contestada = tipo === CreateNodoDtoTipo.DUDA && estado === UpdateNodoDtoEstado.CERRADO;
+  const contestada = tipo === TipoNodo.DUDA && estado === UpdateNodoDtoEstado.CERRADO;
   if (contestada) return `${MARCA_CONTESTADA} ${titulo}`;
   if (esEsperaAbierta({ estado, etiquetas })) return `${MARCA_ESPERA} ${titulo}`;
   return titulo;

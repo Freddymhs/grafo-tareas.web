@@ -14,7 +14,7 @@ export function esEsperaAbierta({
   estado,
   etiquetas,
 }: {
-  readonly estado: string;
+  readonly estado: string | null;
   readonly etiquetas?: readonly string[];
 }): boolean {
   return estado === UpdateNodoDtoEstado.ABIERTO && (etiquetas ?? []).includes(ETIQUETA_ESPERA);

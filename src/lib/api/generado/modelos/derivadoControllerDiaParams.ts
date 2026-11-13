@@ -11,4 +11,8 @@ export type DerivadoControllerDiaParams = {
    * Desde cuándo cuenta «terminé» (por defecto, las últimas 24 h)
    */
   desde?: string;
+  /**
+   * El espacio (tiene que usar el método de trabajo); sin él, el del proyecto por defecto
+   */
+  espacio?: string;
 };

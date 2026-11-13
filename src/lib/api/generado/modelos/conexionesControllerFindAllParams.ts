@@ -5,12 +5,11 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
-import type { ConexionesControllerFindAllTipo } from "./conexionesControllerFindAllTipo";
 
 export type ConexionesControllerFindAllParams = {
   /**
    * Conexiones que salen o entran a este nodo
    */
   nodoId?: string;
-  tipo?: ConexionesControllerFindAllTipo;
+  tipo?: string;
 };

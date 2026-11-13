@@ -7,12 +7,12 @@
  */
 import type { NodoResponseDtoCara } from "./nodoResponseDtoCara";
 import type { NodoResponseDtoEstado } from "./nodoResponseDtoEstado";
-import type { NodoResponseDtoTipo } from "./nodoResponseDtoTipo";
 
 export interface NodoResponseDto {
   id: string;
-  tipo: NodoResponseDtoTipo;
+  tipo: string;
   titulo: string;
+  /** @nullable */
   estado: NodoResponseDtoEstado;
   cara: NodoResponseDtoCara;
   /** @nullable */
@@ -27,6 +27,8 @@ export interface NodoResponseDto {
   /** @nullable */
   descripcion?: string | null;
   /** @nullable */
+  resumen?: string | null;
+  /** @nullable */
   externoOrigen?: string | null;
   /** @nullable */
   externoId?: string | null;
@@ -38,6 +40,7 @@ export interface NodoResponseDto {
   posZ?: number | null;
   /** Cuándo nació en su fuente (la tarjeta en Todoist) o, si se creó acá, al crearse. Nunca vacía */
   fechaOrigen: string;
+  proyectoId: string;
   createdAt: string;
   updatedAt: string;
 }

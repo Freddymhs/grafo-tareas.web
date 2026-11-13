@@ -1,10 +1,10 @@
 "use client";
 
+import { TipoNodo } from "@/lib/constants";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useComplementosControllerCrear } from "@/lib/api/generado/complementos/complementos";
 import { useNodosControllerFindAll } from "@/lib/api/generado/nodos/nodos";
-import { NodosControllerFindAllTipo } from "@/lib/api/generado/modelos";
 import { useRolesControllerLista } from "@/lib/api/generado/roles/roles";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
 import { tiposDeBloqueante, tituloDelBloqueante } from "@/lib/grafo/bloqueante";
@@ -26,7 +26,7 @@ export function AgregarBloqueante({ id }: { readonly id: string }) {
   const invalidar = useInvalidarGrafo();
   const roles = useRolesControllerLista();
   const personas = useNodosControllerFindAll({
-    tipo: NodosControllerFindAllTipo.PERSONA,
+    tipo: TipoNodo.PERSONA,
     estado: "ABIERTO",
     limit: LIMITE_TABLERO,
   });

@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useDerivadoControllerDia } from "@/lib/api/generado/derivado/derivado";
 import type { NodoResumenDto } from "@/lib/api/generado/modelos";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
+import { useAlcance } from "@/lib/alcance/use-alcance";
 import { armarParte, pasaDelLimite } from "@/lib/grafo/parte";
-import { ESTILO_BOTON, MS_AVISO_COPIADO } from "@/lib/constants";
+import { AVISO_SIN_METODO, ESTILO_BOTON, MS_AVISO_COPIADO } from "@/lib/constants";
 
 function Bloque({
   titulo,
@@ -32,9 +33,17 @@ const tarjetas = (nodos: readonly NodoResumenDto[]) =>
   nodos.map((nodo) => <TarjetaNodo key={nodo.id} nodo={nodo} />);
 
 export function ElDia() {
-  const dia = useDerivadoControllerDia();
+  const { alcance, conMetodo, cargando } = useAlcance();
+  const dia = useDerivadoControllerDia(
+    alcance.espacioId ? { espacio: alcance.espacioId } : undefined,
+    {
+      query: { enabled: conMetodo },
+    },
+  );
   const [copiado, setCopiado] = useState(false);
 
+  if (cargando) return <p className="text-gray-500">Cargando…</p>;
+  if (!conMetodo) return <p className="text-gray-500">{AVISO_SIN_METODO}</p>;
   if (dia.isPending) return <p className="text-gray-500">Armando el día…</p>;
   if (dia.isError) return <p className="text-red-600">No se pudo leer la API.</p>;
   const datos = dia.data;

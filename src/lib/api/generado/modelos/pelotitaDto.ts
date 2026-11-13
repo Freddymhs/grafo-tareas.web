@@ -10,4 +10,9 @@ export interface PelotitaDto {
   /** El título del carril */
   carril: string;
   color: string;
+  /**
+   * En la de otro carril: el número de la tarjeta que espera en esa línea (la última si son varias); null en la propia
+   * @nullable
+   */
+  espera: number | null;
 }

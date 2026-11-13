@@ -11,4 +11,8 @@ export type DerivadoControllerPlanParams = {
    * El libro (el id de la HU, o «sin-hu») cuyo plan se quiere ver; sin él, el plan de todas
    */
   libro?: string;
+  /**
+   * El espacio (tiene que usar el método de trabajo); sin él, el del proyecto por defecto
+   */
+  espacio?: string;
 };

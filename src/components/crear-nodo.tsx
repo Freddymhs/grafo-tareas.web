@@ -1,11 +1,15 @@
 "use client";
 
+import { TipoConexion } from "@/lib/constants";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useConexionesControllerCreate } from "@/lib/api/generado/conexiones/conexiones";
 import { useNodosControllerCreate } from "@/lib/api/generado/nodos/nodos";
-import { CreateConexionDtoTipo, type CreateNodoDtoTipo } from "@/lib/api/generado/modelos";
+import { useProyectosControllerListarDeEspacio } from "@/lib/api/generado/proyectos/proyectos";
+import { useTiposControllerListarNodo } from "@/lib/api/generado/tipos/tipos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
+import { destinoDeCreacion } from "@/lib/alcance";
+import { useAlcance } from "@/lib/alcance/use-alcance";
 import type { GrupoDeEtapas } from "@/lib/grafo/grupos-de-etapas";
 import type { Libro } from "@/lib/grafo/libros";
 import { SelectorEtapa } from "@/components/selector-etapa";
@@ -19,6 +23,7 @@ import {
 } from "@/lib/constants";
 
 const SIN_PRIORIDAD = "";
+const SIN_ESPACIO = "";
 
 /**
  * Alta rápida como la de Todoist: título, tipo, columna y prioridad; lo demás se edita en el detalle. Tipo, columna y
@@ -34,11 +39,25 @@ export function CrearNodo({
   readonly libro: Libro | undefined;
 }) {
   const [titulo, setTitulo] = useState("");
-  const [tipo, setTipo] = useState<CreateNodoDtoTipo>(TIPO_NODO_POR_DEFECTO);
+  const [tipoElegido, setTipo] = useState<string>(TIPO_NODO_POR_DEFECTO);
   const [etapa, setEtapa] = useState(ETAPA_ENTRADA);
   const [prioridad, setPrioridad] = useState(SIN_PRIORIDAD);
   const invalidar = useInvalidarGrafo();
-  const historiaId = libro?.historiaId ?? null;
+  const { alcance, conMetodo } = useAlcance();
+  const { espacioId } = alcance;
+  const tiposDelEspacio = useTiposControllerListarNodo(espacioId ?? SIN_ESPACIO, {
+    query: { enabled: Boolean(espacioId) },
+  });
+  const proyectosDelEspacio = useProyectosControllerListarDeEspacio(
+    espacioId ?? SIN_ESPACIO,
+    undefined,
+    {
+      query: { enabled: Boolean(espacioId) },
+    },
+  );
+  const tipos = espacioId ? (tiposDelEspacio.data ?? []).map(({ nombre }) => nombre) : TIPOS_NODO;
+  const tipo = tipos.includes(tipoElegido) ? tipoElegido : (tipos[0] ?? TIPO_NODO_POR_DEFECTO);
+  const historiaId = conMetodo ? (libro?.historiaId ?? null) : null;
   const enUnaHu = historiaId !== null;
   const colgar = useConexionesControllerCreate({ mutation: { onSuccess: invalidar } });
   const crear = useNodosControllerCreate({
@@ -47,7 +66,7 @@ export function CrearNodo({
         setTitulo("");
         if (enUnaHu) {
           colgar.mutate({
-            data: { origenId: id, destinoId: historiaId, tipo: CreateConexionDtoTipo.PERTENECE_A },
+            data: { origenId: id, destinoId: historiaId, tipo: TipoConexion.PERTENECE_A },
           });
         }
         return invalidar();
@@ -69,6 +88,7 @@ export function CrearNodo({
       data: {
         tipo,
         titulo: tituloLimpio,
+        ...destinoDeCreacion(alcance, proyectosDelEspacio.data),
         etapa: etapaVigente === ETAPA_ENTRADA ? undefined : etapaVigente,
         prioridad: prioridad === SIN_PRIORIDAD ? undefined : Number(prioridad),
       },
@@ -88,11 +108,11 @@ export function CrearNodo({
         <>
           <select
             value={tipo}
-            onChange={(evento) => setTipo(evento.target.value as CreateNodoDtoTipo)}
+            onChange={(evento) => setTipo(evento.target.value)}
             aria-label="Tipo"
             className={ESTILO_CAMPO}
           >
-            {TIPOS_NODO.map((t) => (
+            {tipos.map((t) => (
               <option key={t} value={t}>
                 {t}
               </option>

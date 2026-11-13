@@ -1,8 +1,28 @@
-import {
-  CreateConexionDtoTipo,
-  CreateNodoDtoTipo,
-  NodosControllerFindAllNotas,
-} from "@/lib/api/generado/modelos";
+import { CreateEspacioDtoPlantilla, NodosControllerFindAllNotas } from "@/lib/api/generado/modelos";
+
+/** Los tipos que el método de trabajo busca por nombre (FASE 22: en la API son datos de cada espacio, acá son texto). */
+export const TipoNodo = {
+  TAREA: "TAREA",
+  HISTORIA: "HISTORIA",
+  FASE: "FASE",
+  RAMA: "RAMA",
+  DUDA: "DUDA",
+  PERSONA: "PERSONA",
+  PR: "PR",
+  DAILY_ITEM: "DAILY_ITEM",
+} as const;
+export type TipoNodo = (typeof TipoNodo)[keyof typeof TipoNodo];
+
+export const TipoConexion = {
+  DEPENDE_DE: "DEPENDE_DE",
+  ESPERA_RESPUESTA_DE: "ESPERA_RESPUESTA_DE",
+  BLOQUEADA_POR: "BLOQUEADA_POR",
+  PERTENECE_A: "PERTENECE_A",
+  EN_DAILY_DE: "EN_DAILY_DE",
+  SE_RELACIONA_CON: "SE_RELACIONA_CON",
+  DERIVA_DE: "DERIVA_DE",
+} as const;
+export type TipoConexion = (typeof TipoConexion)[keyof typeof TipoConexion];
 
 export const APP_NAME = "grafo-tareas";
 
@@ -28,10 +48,10 @@ export const ROL_TODO = "todo";
 export const NOMBRE_ROL_TODO = "Todo";
 export const ETAPA_OTRAS = "Otras etapas";
 /** El tablero muestra tareas y FASE; las FASE se ven pero se mueven desde su FASE_n.md (D10). */
-export const TIPOS_TABLERO = [CreateNodoDtoTipo.TAREA, CreateNodoDtoTipo.FASE] as const;
+export const TIPOS_TABLERO = [TipoNodo.TAREA, TipoNodo.FASE] as const;
 /** Complementos (FASE 9): una DUDA se escala o se decide; un DAILY_ITEM («para decir») pide su ritual. */
-export const NODO_DUDA = CreateNodoDtoTipo.DUDA;
-export const NODO_PARA_RITUAL = CreateNodoDtoTipo.DAILY_ITEM;
+export const NODO_DUDA = TipoNodo.DUDA;
+export const NODO_PARA_RITUAL = TipoNodo.DAILY_ITEM;
 /** El tablero oculta los complementos que son notas (dolor, apunte, decisión…): se ven en su PBI. */
 export const OCULTAR_NOTAS = NodosControllerFindAllNotas.ocultar;
 
@@ -39,27 +59,29 @@ export const OCULTAR_NOTAS = NodosControllerFindAllNotas.ocultar;
 export const PRIORIDAD_VISIBLE_MAXIMA = 2;
 
 export const NAVEGACION = [
-  { href: "/", titulo: "Tablero" },
-  { href: "/dia", titulo: "El día" },
-  { href: "/hoy", titulo: "Hoy puedo" },
-  { href: "/bloqueos", titulo: "Bloqueos" },
-  { href: "/ramas", titulo: "Ramas" },
+  { href: "/", titulo: "Tablero", requiereMetodo: false },
+  { href: "/dia", titulo: "El día", requiereMetodo: true },
+  { href: "/hoy", titulo: "Hoy puedo", requiereMetodo: false },
+  { href: "/bloqueos", titulo: "Bloqueos", requiereMetodo: false },
+  { href: "/ramas", titulo: "Ramas", requiereMetodo: true },
 ] as const;
 
 /** Los tipos del dominio vienen del OpenAPI (una sola fuente); la TAREA es lo que se crea a diario. */
-export const TIPOS_NODO = Object.values(CreateNodoDtoTipo);
-export const TIPO_NODO_POR_DEFECTO = CreateNodoDtoTipo.TAREA;
+export const TIPOS_NODO = Object.values(TipoNodo);
+export const TIPO_NODO_POR_DEFECTO = TipoNodo.TAREA;
 export const PRIORIDADES = [1, 2, 3, 4] as const;
 
 /** Cómo se lee cada conexión, siempre desde el origen: "X depende de Y". */
-export const TEXTO_CONEXION: Record<CreateConexionDtoTipo, string> = {
+export const TEXTO_CONEXION: Record<string, string> = {
   DEPENDE_DE: "depende de",
   ESPERA_RESPUESTA_DE: "espera respuesta de",
   BLOQUEADA_POR: "bloqueada por",
   PERTENECE_A: "pertenece a",
   EN_DAILY_DE: "en el daily de",
+  SE_RELACIONA_CON: "se relaciona con",
+  DERIVA_DE: "deriva de",
 };
-export const TIPO_CONEXION_POR_DEFECTO = CreateConexionDtoTipo.DEPENDE_DE;
+export const TIPO_CONEXION_POR_DEFECTO = TipoConexion.DEPENDE_DE;
 
 /** Los buscadores (tablero y conectar): desde 2 letras; el de conectar, hasta 20 resultados. */
 export const LARGO_MINIMO_BUSQUEDA = 2;
@@ -83,3 +105,21 @@ export const RUTA_OFFLINE = "/~offline";
 export const ESTILO_CAMPO = "rounded-md border border-gray-300 bg-white px-2 py-1.5 text-sm";
 export const ESTILO_BOTON =
   "rounded-md bg-gray-900 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50";
+
+export const PARAM_ESPACIO = "espacio";
+export const PARAM_PROYECTO = "proyecto";
+export const NOMBRE_TODO = "Todo";
+export const NOMBRE_TODO_EL_ESPACIO = "Todo el espacio";
+export const AVISO_ESPACIO_INEXISTENTE = "Ese espacio ya no existe: se muestra Todo.";
+export const AVISO_PROYECTO_INEXISTENTE = "Ese proyecto ya no existe: se muestra todo el espacio.";
+export const AVISO_ESPACIOS_NO_LEIDOS = "No se pudieron leer los espacios: se muestra Todo.";
+export const PLANTILLA_POR_DEFECTO = CreateEspacioDtoPlantilla.empresa;
+export const PLANTILLAS_ESPACIO = Object.values(CreateEspacioDtoPlantilla);
+export const COLOR_PESTANA_ACTIVA = "#111827";
+export const COLOR_PESTANA_INACTIVA = "transparent";
+export const NOMBRE_TIPO_OTROS = "Otros";
+export const AVISO_BUSCANDO_EN_TODO = "Buscando en todo: la búsqueda cruza todos los espacios.";
+export const AVISO_SIN_METODO = "Este espacio no usa el método de trabajo.";
+export const NOMBRE_PROYECTO_GENERAL = "General";
+export const NOMBRE_OTRO_PROYECTO = "otro proyecto";
+export const SUFIJO_ARCHIVADO = "archivado";

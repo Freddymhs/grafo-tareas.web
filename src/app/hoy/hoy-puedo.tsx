@@ -2,9 +2,11 @@
 
 import { useDerivadoControllerHoyPuedo } from "@/lib/api/generado/derivado/derivado";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
+import { useAlcance } from "@/lib/alcance/use-alcance";
 
 export function HoyPuedo() {
-  const hoy = useDerivadoControllerHoyPuedo();
+  const { params } = useAlcance();
+  const hoy = useDerivadoControllerHoyPuedo(params);
 
   if (hoy.isPending) return <p className="text-gray-500">Calculando…</p>;
   if (hoy.isError) return <p className="text-red-600">No se pudo leer la API.</p>;

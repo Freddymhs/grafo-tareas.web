@@ -5,12 +5,11 @@
  * Tareas como grafo: nodos, conexiones, ramas y lo derivado (bloqueado, hoy puedo, qué se libera)
  * OpenAPI spec version: 1.0
  */
-import type { CreateConexionDtoTipo } from "./createConexionDtoTipo";
 
 export interface CreateConexionDto {
   /** El nodo que depende / pertenece */
   origenId: string;
   /** El nodo del que depende / al que pertenece */
   destinoId: string;
-  tipo: CreateConexionDtoTipo;
+  tipo: string;
 }

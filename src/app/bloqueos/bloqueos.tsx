@@ -4,6 +4,7 @@ import { useDerivadoControllerLibera } from "@/lib/api/generado/derivado/derivad
 import { useNodosControllerFindAll } from "@/lib/api/generado/nodos/nodos";
 import type { NodoResponseDto } from "@/lib/api/generado/modelos";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
+import { useAlcance } from "@/lib/alcance/use-alcance";
 import { LIMITE_TABLERO } from "@/lib/constants";
 
 /** "Si X contesta, se liberan N": la API calcula `libera` para cada persona y duda abierta. */
@@ -37,12 +38,15 @@ function Bloqueador({ nodo }: { nodo: NodoResponseDto }) {
 }
 
 export function Bloqueos() {
+  const { params } = useAlcance();
   const personas = useNodosControllerFindAll({
+    ...params,
     tipo: "PERSONA",
     estado: "ABIERTO",
     limit: LIMITE_TABLERO,
   });
   const dudas = useNodosControllerFindAll({
+    ...params,
     tipo: "DUDA",
     estado: "ABIERTO",
     limit: LIMITE_TABLERO,

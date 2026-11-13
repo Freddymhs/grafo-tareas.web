@@ -11,6 +11,8 @@ import type { UpdateNodoDtoEstado } from "./updateNodoDtoEstado";
 export interface UpdateNodoDto {
   titulo?: string;
   descripcion?: string;
+  /** Una línea, con las palabras del humano: de qué trata el nodo (la VR la muestra al seleccionarlo) */
+  resumen?: string;
   estado?: UpdateNodoDtoEstado;
   /** De qué cara de su HU es (FASE 17): REAL = lo que se trabaja; PLAN = lo que se intuyó (Draft trabajo) */
   cara?: UpdateNodoDtoCara;
@@ -25,6 +27,8 @@ export interface UpdateNodoDto {
   vence?: string;
   /** Solo para nodos RAMA */
   color?: string;
+  /** El proyecto del nodo. Sin él cae en el proyecto por defecto y la respuesta lo avisa (header X-Aviso-Proyecto) */
+  proyectoId?: string;
   /**
    * Columna del tablero: una de GET /etapas. null = vuelve a la entrada
    * @nullable

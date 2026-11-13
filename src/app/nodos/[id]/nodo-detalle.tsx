@@ -1,5 +1,6 @@
 "use client";
 
+import { TipoNodo } from "@/lib/constants";
 import {
   useDerivadoControllerBloqueado,
   useDerivadoControllerLibera,
@@ -10,7 +11,7 @@ import {
   useNodosControllerFindOne,
   useNodosControllerUpdate,
 } from "@/lib/api/generado/nodos/nodos";
-import { CreateNodoDtoTipo, UpdateNodoDtoEstado } from "@/lib/api/generado/modelos";
+import { UpdateNodoDtoEstado } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
 import { AgregarBloqueante } from "@/components/agregar-bloqueante";
 import { CierreNodo } from "@/components/cierre-nodo";
@@ -19,6 +20,7 @@ import { ConexionesNodo } from "@/components/conexiones-nodo";
 import { BotonMoverCara } from "@/components/mover-cara";
 import { Descripcion } from "@/components/descripcion";
 import { SelectorEtapa } from "@/components/selector-etapa";
+import { SelectorProyecto } from "@/components/selector-proyecto";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { ESTILO_BOTON, ETAPA_ENTRADA, TIPOS_TABLERO } from "@/lib/constants";
 import { tituloConMarca } from "@/lib/grafo/cierre";
@@ -43,10 +45,9 @@ export function NodoDetalle({ id }: { id: string }) {
   // D10: la FASE se mueve tildando su FASE_n.md (el hook y `importar:fases`); acá solo se ve y se conecta.
   const soloLectura = n.tipo === FASE;
   // Una duda o una persona no se frenan con otra duda: el bloqueante se agrega desde el trabajo que frena.
-  const puedeTenerBloqueante =
-    n.tipo !== CreateNodoDtoTipo.DUDA && n.tipo !== CreateNodoDtoTipo.PERSONA;
+  const puedeTenerBloqueante = n.tipo !== TipoNodo.DUDA && n.tipo !== TipoNodo.PERSONA;
   // Una duda abierta que ya se pidió pasa a esperar al otro (⏳); marcada por error, vuelve.
-  const esDudaAbierta = n.tipo === CreateNodoDtoTipo.DUDA && !cerrado;
+  const esDudaAbierta = n.tipo === TipoNodo.DUDA && !cerrado;
   const esperando = esEsperaAbierta(n);
   const porQue = bloqueado.data?.por ?? [];
   const liberados = [...(libera.data?.directos ?? []), ...(libera.data?.cadena ?? [])];
@@ -69,6 +70,9 @@ export function NodoDetalle({ id }: { id: string }) {
             ))}
           </div>
         ) : null}
+        <div className="mt-3">
+          <SelectorProyecto id={id} proyectoId={n.proyectoId} />
+        </div>
         {soloLectura ? (
           <p className="mt-3 text-sm text-gray-500">
             Una FASE se mueve tildando su FASE_n.md: el hook la mueve acá y `importar:fases` la

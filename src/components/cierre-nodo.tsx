@@ -1,6 +1,6 @@
 "use client";
 
-import { CreateNodoDtoTipo } from "@/lib/api/generado/modelos";
+import { TipoNodo } from "@/lib/constants";
 import { usePulidoControllerCambiosDe } from "@/lib/api/generado/pulido/pulido";
 import { cierreDe } from "@/lib/grafo/cierre";
 
@@ -10,7 +10,7 @@ export function CierreNodo({ id, tipo }: { readonly id: string; readonly tipo: s
   if (!bitacora.isSuccess) return null;
   const cierre = cierreDe(bitacora.data);
   if (!cierre) return null;
-  const como = tipo === CreateNodoDtoTipo.DUDA ? "Contestada" : "Cerrada";
+  const como = tipo === TipoNodo.DUDA ? "Contestada" : "Cerrada";
 
   return (
     <section className="rounded-xl border border-green-200 bg-green-50 p-4">

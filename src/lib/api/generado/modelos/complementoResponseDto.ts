@@ -7,12 +7,12 @@
  */
 import type { ComplementoResponseDtoCara } from "./complementoResponseDtoCara";
 import type { ComplementoResponseDtoEstado } from "./complementoResponseDtoEstado";
-import type { ComplementoResponseDtoTipo } from "./complementoResponseDtoTipo";
 
 export interface ComplementoResponseDto {
   id: string;
-  tipo: ComplementoResponseDtoTipo;
+  tipo: string;
   titulo: string;
+  /** @nullable */
   estado: ComplementoResponseDtoEstado;
   cara: ComplementoResponseDtoCara;
   /** @nullable */
@@ -27,6 +27,8 @@ export interface ComplementoResponseDto {
   /** @nullable */
   descripcion?: string | null;
   /** @nullable */
+  resumen?: string | null;
+  /** @nullable */
   externoOrigen?: string | null;
   /** @nullable */
   externoId?: string | null;
@@ -38,6 +40,7 @@ export interface ComplementoResponseDto {
   posZ?: number | null;
   /** Cuándo nació en su fuente (la tarjeta en Todoist) o, si se creó acá, al crearse. Nunca vacía */
   fechaOrigen: string;
+  proyectoId: string;
   createdAt: string;
   updatedAt: string;
   /** La clave del catálogo (sale de su etiqueta complemento:<clave>) */

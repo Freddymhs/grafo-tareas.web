@@ -7,12 +7,13 @@
  */
 import type { CreateNodoDtoCara } from "./createNodoDtoCara";
 import type { CreateNodoDtoEstado } from "./createNodoDtoEstado";
-import type { CreateNodoDtoTipo } from "./createNodoDtoTipo";
 
 export interface CreateNodoDto {
-  tipo: CreateNodoDtoTipo;
+  tipo: string;
   titulo: string;
   descripcion?: string;
+  /** Una línea, con las palabras del humano: de qué trata el nodo (la VR la muestra al seleccionarlo) */
+  resumen?: string;
   estado?: CreateNodoDtoEstado;
   /** De qué cara de su HU es (FASE 17): REAL = lo que se trabaja; PLAN = lo que se intuyó (Draft trabajo) */
   cara?: CreateNodoDtoCara;
@@ -32,4 +33,6 @@ export interface CreateNodoDto {
   /** Herramienta de origen (texto libre). Va junto con externoId */
   externoOrigen?: string;
   externoId?: string;
+  /** El proyecto del nodo. Sin él cae en el proyecto por defecto y la respuesta lo avisa (header X-Aviso-Proyecto) */
+  proyectoId?: string;
 }

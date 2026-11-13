@@ -29,6 +29,10 @@ El puerto es el **3001**: el 3000 es la API, y su `CORS_ORIGINS` espera la web a
 | `/nodos/[id]` | Detalle: etapa, cerrar/reabrir (una FASE no: se mueve desde su `.md`, D10), qué lo bloquea, descripción en Markdown, conexiones y conectar, y los complementos (dudas que se escalan o se deciden, apuntes, para decir) |
 | `/~offline`   | Lo que muestra el service worker sin red y sin copia de la página                                                                                                                                                       |
 
+Arriba de cada vista van las pestañas de espacio y proyecto (FASE 24): el alcance viaja en la URL (`?espacio=&proyecto=`), «Todo» es el
+grafo entero, y un espacio sin método de trabajo muestra un tablero por tipo y oculta El día y Ramas. Lo conectado desde otro
+proyecto aparece en el detalle como fantasma, con su «proyecto · espacio».
+
 ## Stack
 
 | Capa         | Tecnología                                                                                        |

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { ConexionResponseDto } from "@/lib/api/generado/modelos";
-import { describirConexion } from "./describir-conexion";
+import { describirConexion, textoDeConexion } from "./describir-conexion";
 
 const conexion: ConexionResponseDto = {
   id: "c1",
@@ -32,6 +32,28 @@ describe("describirConexion", () => {
     );
     expect(describirConexion({ ...conexion, tipo: "EN_DAILY_DE" }, "padre").texto).toBe(
       "en el daily de",
+    );
+  });
+});
+
+describe("textoDeConexion — cómo se lee cada tipo de conexión", () => {
+  it("los tipos de la FASE 22 que faltaban", () => {
+    expect(textoDeConexion("SE_RELACIONA_CON")).toBe("se relaciona con");
+    expect(textoDeConexion("DERIVA_DE")).toBe("deriva de");
+  });
+
+  it("un tipo con texto propio conserva el suyo", () => {
+    expect(textoDeConexion("EN_DAILY_DE")).toBe("en el daily de");
+  });
+
+  it("un tipo sin texto muestra su nombre en minúscula y con espacios, nunca nada", () => {
+    expect(textoDeConexion("ES_PARTE_DE")).toBe("es parte de");
+    expect(textoDeConexion("INSTALADA_EN")).toBe("instalada en");
+  });
+
+  it("describirConexion lo usa: un tipo nuevo no deja el verbo vacío", () => {
+    expect(describirConexion({ ...conexion, tipo: "ES_PARTE_DE" }, "padre").texto).toBe(
+      "es parte de",
     );
   });
 });

@@ -18,6 +18,8 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
+import type { EtapasControllerListaParams } from "../modelos";
+
 import { cliente } from "../../cliente";
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
@@ -37,41 +39,55 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const getEtapasControllerListaUrl = () => {
-  return `/api/v1/etapas`;
+export const getEtapasControllerListaUrl = (params?: EtapasControllerListaParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : String(value));
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/etapas?${stringifiedParams}` : `/api/v1/etapas`;
 };
 
 /**
- * @summary Las columnas del tablero, en orden
+ * @summary Las columnas del tablero, en orden (?espacio=: las de ese espacio; sin él, las del método de trabajo)
  */
 export const etapasControllerLista = async (
+  params?: EtapasControllerListaParams,
   options?: Parameters<typeof cliente>[1],
 ): Promise<string[]> => {
-  return cliente<string[]>(getEtapasControllerListaUrl(), {
+  return cliente<string[]>(getEtapasControllerListaUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getEtapasControllerListaQueryKey = () => {
-  return [`/api/v1/etapas`] as const;
+export const getEtapasControllerListaQueryKey = (params?: EtapasControllerListaParams) => {
+  return [`/api/v1/etapas`, ...(params ? [params] : [])] as const;
 };
 
 export const getEtapasControllerListaQueryOptions = <
   TData = Awaited<ReturnType<typeof etapasControllerLista>>,
   TError = unknown,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<Awaited<ReturnType<typeof etapasControllerLista>>, TError, TData>
-  >;
-  request?: SecondParameter<typeof cliente>;
-}) => {
+>(
+  params?: EtapasControllerListaParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof etapasControllerLista>>, TError, TData>
+    >;
+    request?: SecondParameter<typeof cliente>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getEtapasControllerListaQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getEtapasControllerListaQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof etapasControllerLista>>> = ({ signal }) =>
-    etapasControllerLista({ signal, ...requestOptions });
+    etapasControllerLista(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof etapasControllerLista>>,
@@ -89,6 +105,7 @@ export function useEtapasControllerLista<
   TData = Awaited<ReturnType<typeof etapasControllerLista>>,
   TError = unknown,
 >(
+  params: undefined | EtapasControllerListaParams,
   options: {
     query: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof etapasControllerLista>>, TError, TData>
@@ -109,6 +126,7 @@ export function useEtapasControllerLista<
   TData = Awaited<ReturnType<typeof etapasControllerLista>>,
   TError = unknown,
 >(
+  params?: EtapasControllerListaParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof etapasControllerLista>>, TError, TData>
@@ -129,6 +147,7 @@ export function useEtapasControllerLista<
   TData = Awaited<ReturnType<typeof etapasControllerLista>>,
   TError = unknown,
 >(
+  params?: EtapasControllerListaParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof etapasControllerLista>>, TError, TData>
@@ -138,13 +157,14 @@ export function useEtapasControllerLista<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
- * @summary Las columnas del tablero, en orden
+ * @summary Las columnas del tablero, en orden (?espacio=: las de ese espacio; sin él, las del método de trabajo)
  */
 
 export function useEtapasControllerLista<
   TData = Awaited<ReturnType<typeof etapasControllerLista>>,
   TError = unknown,
 >(
+  params?: EtapasControllerListaParams,
   options?: {
     query?: Partial<
       UseQueryOptions<Awaited<ReturnType<typeof etapasControllerLista>>, TError, TData>
@@ -153,7 +173,7 @@ export function useEtapasControllerLista<
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getEtapasControllerListaQueryOptions(options);
+  const queryOptions = getEtapasControllerListaQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

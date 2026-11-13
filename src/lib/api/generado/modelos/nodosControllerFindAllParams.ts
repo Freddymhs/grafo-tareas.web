@@ -8,7 +8,6 @@
 import type { NodosControllerFindAllCara } from "./nodosControllerFindAllCara";
 import type { NodosControllerFindAllEstado } from "./nodosControllerFindAllEstado";
 import type { NodosControllerFindAllNotas } from "./nodosControllerFindAllNotas";
-import type { NodosControllerFindAllTipo } from "./nodosControllerFindAllTipo";
 
 export type NodosControllerFindAllParams = {
   /**
@@ -20,7 +19,7 @@ export type NodosControllerFindAllParams = {
    * @maximum 500
    */
   limit?: number;
-  tipo?: NodosControllerFindAllTipo;
+  tipo?: string;
   estado?: NodosControllerFindAllEstado;
   /**
    * Solo los de esta cara de su HU (FASE 17): REAL = el trabajo, PLAN = el Draft
@@ -47,6 +46,14 @@ export type NodosControllerFindAllParams = {
    * Solo los nodos que PERTENECEN_A esta rama
    */
   rama?: string;
+  /**
+   * Solo los nodos de este proyecto
+   */
+  proyecto?: string;
+  /**
+   * Solo los nodos de los proyectos de este espacio
+   */
+  espacio?: string;
   /**
    * Busca en título y descripción, sin distinguir mayúsculas
    */

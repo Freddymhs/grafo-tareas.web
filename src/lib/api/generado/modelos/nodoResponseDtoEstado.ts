@@ -6,8 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
+/**
+ * @nullable
+ */
 export type NodoResponseDtoEstado =
-  (typeof NodoResponseDtoEstado)[keyof typeof NodoResponseDtoEstado];
+  | (typeof NodoResponseDtoEstado)[keyof typeof NodoResponseDtoEstado]
+  | null;
 
 export const NodoResponseDtoEstado = {
   ABIERTO: "ABIERTO",

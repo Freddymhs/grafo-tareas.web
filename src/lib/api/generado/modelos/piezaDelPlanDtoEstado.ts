@@ -6,8 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
+/**
+ * @nullable
+ */
 export type PiezaDelPlanDtoEstado =
-  (typeof PiezaDelPlanDtoEstado)[keyof typeof PiezaDelPlanDtoEstado];
+  | (typeof PiezaDelPlanDtoEstado)[keyof typeof PiezaDelPlanDtoEstado]
+  | null;
 
 export const PiezaDelPlanDtoEstado = {
   ABIERTO: "ABIERTO",

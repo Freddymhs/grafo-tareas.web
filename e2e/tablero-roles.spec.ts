@@ -85,7 +85,7 @@ test("el tablero tiene una pestaña por rol y cada una muestra sus columnas y su
 
   // Cada columna dice qué significa (FASE 11): «AMARRAR 🧰» sola no se recuerda.
   await expect(page.getByText("línea base y tests contra el código sin tocar")).toBeVisible();
-  await expect(page.getByText(/llegó sin columna/)).toBeVisible();
+  await expect(page.getByText(/en Todoist no tienen sección/)).toBeVisible();
   await rol.getByRole("button", { name: "Calidad" }).click();
   await expect(columnas).toHaveText(["Sin columna", "ENTENDIMIENTO", "AMARRAR 🧰"]);
   await expect(page.getByRole("link", { name: /^refactor\b/ })).toBeVisible();

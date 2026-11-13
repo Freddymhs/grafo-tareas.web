@@ -1,14 +1,14 @@
+import { TipoNodo } from "@/lib/constants";
 import { describe, expect, it } from "vitest";
 import {
   CambioResponseDtoTipo,
-  CreateNodoDtoTipo,
   UpdateNodoDtoEstado,
   type CambioResponseDto,
 } from "@/lib/api/generado/modelos";
 import { cierreDe, tituloConMarca } from "./cierre";
 import { ETIQUETA_ESPERA } from "./espera";
 
-const { DUDA, TAREA } = CreateNodoDtoTipo;
+const { DUDA, TAREA } = TipoNodo;
 const { ABIERTO, CERRADO } = UpdateNodoDtoEstado;
 
 const cambio = (

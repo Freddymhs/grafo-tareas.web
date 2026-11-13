@@ -1,5 +1,6 @@
 "use client";
 
+import { TipoNodo } from "@/lib/constants";
 import { useDeferredValue, useState } from "react";
 import { keepPreviousData } from "@tanstack/react-query";
 import {
@@ -9,12 +10,12 @@ import {
 import { useEtapasControllerLista } from "@/lib/api/generado/etapas/etapas";
 import { useNodosControllerFindAll } from "@/lib/api/generado/nodos/nodos";
 import { useRolesControllerLista } from "@/lib/api/generado/roles/roles";
-import {
-  CreateNodoDtoTipo,
-  UpdateNodoDtoCara,
-  type NodosControllerFindAllParams,
-} from "@/lib/api/generado/modelos";
+import { UpdateNodoDtoCara } from "@/lib/api/generado/modelos";
 import { CrearNodo } from "@/components/crear-nodo";
+import { useAlcance } from "@/lib/alcance/use-alcance";
+import { filtroDelTablero } from "@/lib/grafo/filtro-del-tablero";
+import { VecinosDeOtrosProyectos } from "@/components/vecinos-de-otros-proyectos";
+import { TableroSimple } from "./tablero-simple";
 import { TarjetaMovible } from "@/components/tarjeta-movible";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { columnasDelTablero } from "@/lib/grafo/columnas-tablero";
@@ -24,16 +25,16 @@ import { librosDe, NOMBRE_TODAS, TODAS, type Libro } from "@/lib/grafo/libros";
 import { CARAS, NOMBRE_CARA } from "@/lib/grafo/mover-cara";
 import {
   API_URL,
+  AVISO_BUSCANDO_EN_TODO,
   ESTILO_CAMPO,
   LARGO_MAXIMO_BUSQUEDA,
-  LIMITE_TABLERO,
   NOMBRE_ROL_TODO,
-  OCULTAR_NOTAS,
   ROL_TODO,
   TIPOS_TABLERO,
 } from "@/lib/constants";
 
 const [TAREA, FASE] = TIPOS_TABLERO;
+const paramsDelMetodo = (espacio: string | undefined) => (espacio ? { espacio } : undefined);
 /** Al cambiar de rol o de HU se queda el tablero anterior hasta que llega el nuevo: sin parpadeo de «Cargando». */
 const MANTENER = { query: { placeholderData: keepPreviousData } };
 const ESTILO_COLUMNA =
@@ -76,9 +77,21 @@ function Pildoras({
  * en una tarjeta la mueve a la otra cara. Qué hay en cada HU y en cada carril lo decide la API.
  */
 export function Tablero() {
+  const { conMetodo, cargando } = useAlcance();
+  if (cargando) return <p className="text-gray-500">Cargando…</p>;
+  return (
+    <>
+      {conMetodo ? <TableroConMetodo /> : <TableroSimple />}
+      <VecinosDeOtrosProyectos />
+    </>
+  );
+}
+
+function TableroConMetodo() {
   const [cara, elegirCara] = useState<UpdateNodoDtoCara>(UpdateNodoDtoCara.REAL);
   const [libroElegido, elegirLibro] = useState<string>(TODAS);
-  const paginas = useDerivadoControllerPaginas();
+  const { alcance } = useAlcance();
+  const paginas = useDerivadoControllerPaginas(paramsDelMetodo(alcance.espacioId));
   const enPlan = cara === UpdateNodoDtoCara.PLAN;
   const libros = librosDe(paginas.data ?? [], cara);
   // Una HU elegida en una cara puede no tener la otra (la 19565 no tiene plan): se vuelve a «Todas».
@@ -110,7 +123,11 @@ export function Tablero() {
         elegida={elegido?.libro ?? TODAS}
         elegir={elegirLibro}
       />
-      {enPlan ? <TableroPlan libro={elegido?.libro} /> : <TableroTrabajo libro={elegido} />}
+      {enPlan ? (
+        <TableroPlan libro={elegido?.libro} espacioId={alcance.espacioId} />
+      ) : (
+        <TableroTrabajo libro={elegido} />
+      )}
     </div>
   );
 }
@@ -125,22 +142,15 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
   const [escrito, escribir] = useState("");
   // Mientras se escribe, el tablero de antes sigue a la vista: la consulta va con el texto diferido.
   const buscado = textoDeBusqueda(useDeferredValue(escrito));
-  const etapas = useEtapasControllerLista();
+  const { alcance, params } = useAlcance();
+  const etapas = useEtapasControllerLista(paramsDelMetodo(alcance.espacioId));
   const roles = useRolesControllerLista();
-  const filtro: NodosControllerFindAllParams = {
-    estado: "ABIERTO",
-    notas: OCULTAR_NOTAS,
-    limit: LIMITE_TABLERO,
-    cara: UpdateNodoDtoCara.REAL,
-    ...(libro ? { libro: libro.libro } : {}),
-    ...(rolElegido === ROL_TODO ? {} : { rol: rolElegido }),
-    ...(buscado ? { q: buscado } : {}),
-  };
+  const filtro = filtroDelTablero({ params, q: buscado, libro: libro?.libro, rol: rolElegido });
   const tareas = useNodosControllerFindAll({ ...filtro, tipo: TAREA }, MANTENER);
   const fases = useNodosControllerFindAll({ ...filtro, tipo: FASE }, MANTENER);
   const conDudas = buscaDudas(buscado);
   const dudas = useNodosControllerFindAll(
-    { ...filtro, tipo: CreateNodoDtoTipo.DUDA },
+    { ...filtro, tipo: TipoNodo.DUDA },
     { query: { placeholderData: keepPreviousData, enabled: conDudas } },
   );
   // Apagada (sin búsqueda), la consulta de dudas queda «pending» para siempre: no cuenta para «Cargando».
@@ -184,6 +194,9 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
         maxLength={LARGO_MAXIMO_BUSQUEDA}
         className={`${ESTILO_CAMPO} mb-2 w-full`}
       />
+      {buscado && alcance.espacioId ? (
+        <p className="mb-1 text-sm text-gray-500">{AVISO_BUSCANDO_EN_TODO}</p>
+      ) : null}
       {buscado ? (
         <p className="mb-3 text-sm text-gray-500">
           {nodos.length === 0
@@ -221,8 +234,18 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
 }
 
 /** El plan (el Draft): una columna por carril, sus piezas en orden de ronda (GET /derivado/plan). */
-function TableroPlan({ libro }: { readonly libro: string | undefined }) {
-  const plan = useDerivadoControllerPlan(libro ? { libro } : undefined, MANTENER);
+function TableroPlan({
+  libro,
+  espacioId,
+}: {
+  readonly libro: string | undefined;
+  readonly espacioId: string | undefined;
+}) {
+  const parametros = { ...(libro ? { libro } : {}), ...(espacioId ? { espacio: espacioId } : {}) };
+  const plan = useDerivadoControllerPlan(
+    Object.keys(parametros).length > 0 ? parametros : undefined,
+    MANTENER,
+  );
 
   if (plan.isPending) return <p className="text-gray-500">Cargando el plan…</p>;
   if (!plan.isSuccess)

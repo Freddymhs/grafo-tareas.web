@@ -6,8 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
+/**
+ * @nullable
+ */
 export type ComplementoResponseDtoEstado =
-  (typeof ComplementoResponseDtoEstado)[keyof typeof ComplementoResponseDtoEstado];
+  | (typeof ComplementoResponseDtoEstado)[keyof typeof ComplementoResponseDtoEstado]
+  | null;
 
 export const ComplementoResponseDtoEstado = {
   ABIERTO: "ABIERTO",

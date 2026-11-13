@@ -8,12 +8,12 @@
 import type { PelotitaDto } from "./pelotitaDto";
 import type { PiezaDelPlanDtoCara } from "./piezaDelPlanDtoCara";
 import type { PiezaDelPlanDtoEstado } from "./piezaDelPlanDtoEstado";
-import type { PiezaDelPlanDtoTipo } from "./piezaDelPlanDtoTipo";
 
 export interface PiezaDelPlanDto {
   id: string;
-  tipo: PiezaDelPlanDtoTipo;
+  tipo: string;
   titulo: string;
+  /** @nullable */
   estado: PiezaDelPlanDtoEstado;
   cara: PiezaDelPlanDtoCara;
   /** @nullable */
@@ -27,4 +27,6 @@ export interface PiezaDelPlanDto {
   vence?: string | null;
   /** La primera, su carril; las demás, una por cada otro carril del que depende (como el Draft de Todoist) */
   pelotitas: PelotitaDto[];
+  /** Su lugar en la cadena de DEPENDE_DE de su carril: 1 si no depende de nada de su carril */
+  orden: number;
 }

@@ -7,12 +7,12 @@
  */
 import type { NodoResumenDtoCara } from "./nodoResumenDtoCara";
 import type { NodoResumenDtoEstado } from "./nodoResumenDtoEstado";
-import type { NodoResumenDtoTipo } from "./nodoResumenDtoTipo";
 
 export interface NodoResumenDto {
   id: string;
-  tipo: NodoResumenDtoTipo;
+  tipo: string;
   titulo: string;
+  /** @nullable */
   estado: NodoResumenDtoEstado;
   cara: NodoResumenDtoCara;
   /** @nullable */

@@ -1,5 +1,6 @@
 "use client";
 
+import type { TipoConexion } from "@/lib/constants";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -11,8 +12,10 @@ import {
   useNodosControllerFindAll,
   useNodosControllerFindOne,
 } from "@/lib/api/generado/nodos/nodos";
-import type { CreateConexionDtoTipo } from "@/lib/api/generado/modelos";
 import { useInvalidarGrafo } from "@/lib/api/invalidar-grafo";
+import { rotuloFantasma } from "@/lib/alcance";
+import type { Directorio } from "@/lib/alcance";
+import { useDirectorio } from "@/lib/alcance/use-directorio";
 import { describirConexion } from "@/lib/grafo/describir-conexion";
 import { textoDeBusqueda } from "@/lib/grafo/busqueda";
 import {
@@ -23,19 +26,45 @@ import {
   ESTILO_CAMPO,
 } from "@/lib/constants";
 
-const TIPOS_CONEXION = Object.keys(TEXTO_CONEXION) as CreateConexionDtoTipo[];
+const TIPOS_CONEXION = Object.keys(TEXTO_CONEXION) as TipoConexion[];
 
-/** La conexión solo trae ids: el título del otro extremo se pide aparte (la caché de la query lo repite gratis). */
-function NombreNodo({ id }: { id: string }) {
+/**
+ * La conexión solo trae ids: el título del otro extremo se pide aparte (la caché de la query lo repite gratis). Si ese
+ * extremo es de otro proyecto que el del detalle, va atenuado con el nombre de su proyecto (D8, FASE 24).
+ */
+function NombreNodo({
+  id,
+  proyectoDeReferenciaId,
+  directorio,
+}: {
+  id: string;
+  proyectoDeReferenciaId: string | undefined;
+  directorio: Directorio;
+}) {
   const nodo = useNodosControllerFindOne(id);
+  const rotulo = nodo.data
+    ? rotuloFantasma(nodo.data.proyectoId, proyectoDeReferenciaId, directorio)
+    : null;
   return (
-    <Link href={`/nodos/${id}`} className="font-medium underline-offset-2 hover:underline">
-      {nodo.data?.titulo ?? id}
-    </Link>
+    <span className={rotulo ? "opacity-50" : undefined}>
+      <Link href={`/nodos/${id}`} className="font-medium underline-offset-2 hover:underline">
+        {nodo.data?.titulo ?? id}
+      </Link>
+      {rotulo ? <span className="ml-1 text-xs text-gray-500">({rotulo})</span> : null}
+    </span>
   );
 }
 
 function ListaConexiones({ id }: { id: string }) {
+  const referencia = useNodosControllerFindOne(id);
+  const directorio = useDirectorio();
+  const nombre = (otroId: string) => (
+    <NombreNodo
+      id={otroId}
+      proyectoDeReferenciaId={referencia.data?.proyectoId}
+      directorio={directorio}
+    />
+  );
   const conexiones = useConexionesControllerFindAll({ nodoId: id });
   const invalidar = useInvalidarGrafo();
   const quitar = useConexionesControllerRemove({ mutation: { onSuccess: invalidar } });
@@ -53,11 +82,11 @@ function ListaConexiones({ id }: { id: string }) {
           <li key={descrita.id} className="flex items-center gap-2">
             {descrita.esOrigen ? (
               <span>
-                este <em>{descrita.texto}</em> <NombreNodo id={descrita.otroId} />
+                este <em>{descrita.texto}</em> {nombre(descrita.otroId)}
               </span>
             ) : (
               <span>
-                <NombreNodo id={descrita.otroId} /> <em>{descrita.texto}</em> este
+                {nombre(descrita.otroId)} <em>{descrita.texto}</em> este
               </span>
             )}
             <button
@@ -78,7 +107,7 @@ function ListaConexiones({ id }: { id: string }) {
 
 /** Conectar desde este nodo: "este [tipo] [el que busques]". Para la otra dirección se abre el otro nodo. */
 function ConectarNodo({ origenId }: { origenId: string }) {
-  const [tipo, setTipo] = useState<CreateConexionDtoTipo>(TIPO_CONEXION_POR_DEFECTO);
+  const [tipo, setTipo] = useState<TipoConexion>(TIPO_CONEXION_POR_DEFECTO);
   const [q, setQ] = useState("");
   const invalidar = useInvalidarGrafo();
   const buscado = textoDeBusqueda(q);
@@ -103,7 +132,7 @@ function ConectarNodo({ origenId }: { origenId: string }) {
         <span>este</span>
         <select
           value={tipo}
-          onChange={(evento) => setTipo(evento.target.value as CreateConexionDtoTipo)}
+          onChange={(evento) => setTipo(evento.target.value as TipoConexion)}
           aria-label="Tipo de conexión"
           className={ESTILO_CAMPO}
         >

@@ -10,6 +10,11 @@ export interface ConexionDescrita {
   readonly texto: string;
 }
 
+/** Un tipo de conexión que el espacio agregó y la web no conoce se lee por su nombre («ES_PARTE_DE» → «es parte de»). */
+export function textoDeConexion(tipo: string): string {
+  return TEXTO_CONEXION[tipo] ?? tipo.toLowerCase().replaceAll("_", " ");
+}
+
 export function describirConexion(
   conexion: ConexionResponseDto,
   desdeId: string,
@@ -19,6 +24,6 @@ export function describirConexion(
     id: conexion.id,
     otroId: esOrigen ? conexion.destinoId : conexion.origenId,
     esOrigen,
-    texto: TEXTO_CONEXION[conexion.tipo],
+    texto: textoDeConexion(conexion.tipo),
   };
 }
