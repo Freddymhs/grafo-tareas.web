@@ -108,11 +108,11 @@ export const ESTILO_BOTON =
 
 export const PARAM_ESPACIO = "espacio";
 export const PARAM_PROYECTO = "proyecto";
-export const NOMBRE_TODO = "Todo";
-export const NOMBRE_TODO_EL_ESPACIO = "Todo el espacio";
-export const AVISO_ESPACIO_INEXISTENTE = "Ese espacio ya no existe: se muestra Todo.";
-export const AVISO_PROYECTO_INEXISTENTE = "Ese proyecto ya no existe: se muestra todo el espacio.";
-export const AVISO_ESPACIOS_NO_LEIDOS = "No se pudieron leer los espacios: se muestra Todo.";
+export const AVISO_ESPACIO_INEXISTENTE = "Ese espacio ya no existe: se muestra el primero.";
+export const AVISO_PROYECTO_INEXISTENTE = "Ese proyecto ya no existe: se muestra el primero.";
+export const AVISO_ESPACIOS_NO_LEIDOS = "No se pudieron leer los espacios.";
+/** Con menos proyectos vigentes la fila de proyectos no se muestra y se ve el espacio entero (FASE 26, D2). */
+export const MIN_PROYECTOS_CON_FILA = 2;
 export const PLANTILLA_POR_DEFECTO = CreateEspacioDtoPlantilla.empresa;
 export const PLANTILLAS_ESPACIO = Object.values(CreateEspacioDtoPlantilla);
 export const COLOR_PESTANA_ACTIVA = "#111827";
@@ -120,6 +120,5 @@ export const COLOR_PESTANA_INACTIVA = "transparent";
 export const NOMBRE_TIPO_OTROS = "Otros";
 export const AVISO_BUSCANDO_EN_TODO = "Buscando en todo: la búsqueda cruza todos los espacios.";
 export const AVISO_SIN_METODO = "Este espacio no usa el método de trabajo.";
-export const NOMBRE_PROYECTO_GENERAL = "General";
 export const NOMBRE_OTRO_PROYECTO = "otro proyecto";
 export const SUFIJO_ARCHIVADO = "archivado";

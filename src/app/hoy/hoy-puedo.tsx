@@ -5,8 +5,8 @@ import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { useAlcance } from "@/lib/alcance/use-alcance";
 
 export function HoyPuedo() {
-  const { params } = useAlcance();
-  const hoy = useDerivadoControllerHoyPuedo(params);
+  const { params, cargando } = useAlcance();
+  const hoy = useDerivadoControllerHoyPuedo(params, { query: { enabled: !cargando } });
 
   if (hoy.isPending) return <p className="text-gray-500">Calculando…</p>;
   if (hoy.isError) return <p className="text-red-600">No se pudo leer la API.</p>;

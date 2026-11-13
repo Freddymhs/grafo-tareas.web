@@ -38,19 +38,16 @@ function Bloqueador({ nodo }: { nodo: NodoResponseDto }) {
 }
 
 export function Bloqueos() {
-  const { params } = useAlcance();
-  const personas = useNodosControllerFindAll({
-    ...params,
-    tipo: "PERSONA",
-    estado: "ABIERTO",
-    limit: LIMITE_TABLERO,
-  });
-  const dudas = useNodosControllerFindAll({
-    ...params,
-    tipo: "DUDA",
-    estado: "ABIERTO",
-    limit: LIMITE_TABLERO,
-  });
+  const { params, cargando } = useAlcance();
+  const conAlcance = { query: { enabled: !cargando } };
+  const personas = useNodosControllerFindAll(
+    { ...params, tipo: "PERSONA", estado: "ABIERTO", limit: LIMITE_TABLERO },
+    conAlcance,
+  );
+  const dudas = useNodosControllerFindAll(
+    { ...params, tipo: "DUDA", estado: "ABIERTO", limit: LIMITE_TABLERO },
+    conAlcance,
+  );
 
   if (personas.isPending || dudas.isPending) return <p className="text-gray-500">Cargando…</p>;
   if (personas.isError || dudas.isError)

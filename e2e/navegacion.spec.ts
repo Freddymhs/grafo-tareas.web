@@ -14,7 +14,8 @@ test("la barra lleva a cada vista y cada una tiene su título", async ({ page })
   await page.goto("/");
   for (const { href, titulo } of VISTAS) {
     await page.getByRole("navigation").getByRole("link", { name: titulo }).click();
-    await expect(page).toHaveURL(new RegExp(`${href.replace("/", "\\/")}$`));
+    // La barra conserva la pestaña que se ve (`?espacio=`): desde la FASE 26 siempre hay una.
+    await expect(page).toHaveURL(new RegExp(`${href.replace("/", "\\/")}(\\?|$)`));
     await expect(page.getByRole("heading", { level: 1 })).toContainText(titulo);
   }
 });

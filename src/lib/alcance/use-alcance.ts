@@ -7,7 +7,7 @@ import { useProyectosControllerListarDeEspacio } from "@/lib/api/generado/proyec
 import type { EspacioResponseDto, ProyectoResponseDto } from "@/lib/api/generado/modelos";
 import { AVISO_ESPACIOS_NO_LEIDOS } from "@/lib/constants";
 import { useHidratado } from "./use-hidratado";
-import { leerAlcance, paramsDeAlcance, resolverAlcance } from "./alcance";
+import { leerAlcance, paramsDeAlcance, resolverAlcance, resolverEspacio } from "./alcance";
 import type { Alcance, AlcanceResuelto, ParamsDeAlcance } from "./alcance";
 
 export interface AlcanceActivo {
@@ -17,31 +17,36 @@ export interface AlcanceActivo {
   aviso?: string;
   params: ParamsDeAlcance;
   cargando: boolean;
+  /** No se pudieron leer los espacios: sin ellos no hay alcance, y las vistas lo dicen en vez de mostrar todo mezclado. */
+  fallo: boolean;
   conMetodo: boolean;
 }
 
 const SIN_ESPACIO = "";
 
+/**
+ * El alcance que se ve (FASE 24 y 26): el de la URL contra lo que la API tiene. Nunca es «todo»: sin espacio en la URL se
+ * ve el primero, y con fila de proyectos, su primer proyecto. `cargando` mientras no se saben los espacios y los
+ * proyectos del que se ve: hasta entonces no se resuelve nada (sin consultas con un alcance a medias ni avisos falsos).
+ */
 export function useAlcance(): AlcanceActivo {
   const searchParams = useSearchParams();
   const pedido = useMemo(() => leerAlcance(searchParams), [searchParams]);
   const espacios = useEspaciosControllerFindAll();
-  const proyectos = useProyectosControllerListarDeEspacio(
-    pedido.espacioId ?? SIN_ESPACIO,
-    undefined,
-    {
-      query: { enabled: Boolean(pedido.espacioId) },
-    },
-  );
-
   const hidratado = useHidratado();
   const espaciosVistos = hidratado ? espacios.data : undefined;
+  const espacioVisto = resolverEspacio(pedido.espacioId, espaciosVistos ?? []).espacio?.id;
+  const proyectos = useProyectosControllerListarDeEspacio(espacioVisto ?? SIN_ESPACIO, undefined, {
+    query: { enabled: Boolean(espacioVisto) },
+  });
   const proyectosVistos = hidratado ? proyectos.data : undefined;
-  const cargando = Boolean(pedido.espacioId) && (!hidratado || espacios.isPending);
-  const sinLeer = Boolean(pedido.espacioId) && hidratado && espacios.isError;
+
+  const cargando =
+    !hidratado || espacios.isPending || (Boolean(espacioVisto) && proyectos.isPending);
+  const sinLeer = hidratado && espacios.isError;
   const resuelto = useMemo<AlcanceResuelto>(() => {
-    if (cargando) return { alcance: pedido };
     if (sinLeer) return { alcance: {}, aviso: AVISO_ESPACIOS_NO_LEIDOS };
+    if (cargando) return { alcance: pedido };
     return resolverAlcance(pedido, espaciosVistos ?? [], proyectosVistos);
   }, [cargando, sinLeer, pedido, espaciosVistos, proyectosVistos]);
 
@@ -50,5 +55,14 @@ export function useAlcance(): AlcanceActivo {
   const { espacio, proyecto, aviso } = resuelto;
   const conMetodo = !cargando && (!espacioId || Boolean(espacio?.metodo));
 
-  return { alcance: resuelto.alcance, espacio, proyecto, aviso, params, cargando, conMetodo };
+  return {
+    alcance: resuelto.alcance,
+    espacio,
+    proyecto,
+    aviso,
+    params,
+    cargando,
+    fallo: sinLeer,
+    conMetodo,
+  };
 }

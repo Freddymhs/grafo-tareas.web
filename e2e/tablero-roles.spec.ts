@@ -54,6 +54,16 @@ const NODOS = [
 ];
 const DE_CALIDAD = new Set(["refactor"]);
 
+const ESPACIO_CON_METODO = {
+  id: "e-sigsa",
+  nombre: "SIGSA",
+  color: null,
+  orden: 0,
+  archivado: false,
+  metodo: "trabajo-hu",
+  etapas: [],
+};
+
 const sobre = (route: Route, data: unknown) =>
   route.fulfill({ json: { statusCode: 200, data, meta: {} } });
 
@@ -61,8 +71,11 @@ test("el tablero tiene una pestaña por rol y cada una muestra sus columnas y su
   page,
 }) => {
   const pedidosConRol: string[] = [];
+  // El tablero espera a saber qué espacio se ve (FASE 26): uno con método y sin proyectos.
+  await page.route("**/api/v1/espacios", (route) => sobre(route, [ESPACIO_CON_METODO]));
+  await page.route("**/api/v1/espacios/*/proyectos", (route) => sobre(route, []));
   await page.route("**/api/v1/roles", (route) => sobre(route, ROLES));
-  await page.route("**/api/v1/etapas", (route) => sobre(route, ETAPAS));
+  await page.route("**/api/v1/etapas*", (route) => sobre(route, ETAPAS));
   await page.route("**/api/v1/nodos?**", (route) => {
     const url = new URL(route.request().url());
     const tipo = url.searchParams.get("tipo");

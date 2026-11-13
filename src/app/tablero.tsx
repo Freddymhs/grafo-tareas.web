@@ -77,8 +77,10 @@ function Pildoras({
  * en una tarjeta la mueve a la otra cara. Qué hay en cada HU y en cada carril lo decide la API.
  */
 export function Tablero() {
-  const { conMetodo, cargando } = useAlcance();
+  const { conMetodo, cargando, fallo } = useAlcance();
   if (cargando) return <p className="text-gray-500">Cargando…</p>;
+  if (fallo)
+    return <p className="text-red-600">No se pudo leer la API. ¿Está arriba en {API_URL}?</p>;
   return (
     <>
       {conMetodo ? <TableroConMetodo /> : <TableroSimple />}
