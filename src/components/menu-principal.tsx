@@ -6,8 +6,9 @@ import { hrefConAlcance } from "@/lib/alcance";
 import { APP_NAME, NAVEGACION } from "@/lib/constants";
 
 export function MenuPrincipal() {
-  const { alcance, conMetodo } = useAlcance();
-  const visibles = NAVEGACION.filter(({ requiereMetodo }) => conMetodo || !requiereMetodo);
+  const { alcance, conMetodo, fallo } = useAlcance();
+  // Sin poder leer los espacios no se sabe si hay método: se muestran todas, y cada vista dice que no pudo leer.
+  const visibles = NAVEGACION.filter(({ requiereMetodo }) => conMetodo || fallo || !requiereMetodo);
 
   return (
     <nav className="border-b border-gray-200 px-6 py-3 flex items-center gap-6 text-sm">

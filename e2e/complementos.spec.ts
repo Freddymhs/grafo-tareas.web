@@ -1,4 +1,5 @@
-import { test, expect, type Route } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { sobre } from "./api-simulada";
 
 // La API simulada (en CI no hay): un PBI con una duda colgada. Se prueba lo que decide la web — mostrar lo que
 // cuelga con el nombre del catálogo, pedir el ritual solo para «para decir» y mandar el cuerpo correcto.
@@ -44,9 +45,6 @@ const DUDA = {
   ]),
   complemento: "duda-negocio",
 };
-
-const sobre = (route: Route, data: unknown, status = 200) =>
-  route.fulfill({ status, json: { statusCode: status, data, meta: {} } });
 
 test("el detalle muestra lo que cuelga y cuelga «para decir» con su ritual", async ({ page }) => {
   const enviados: unknown[] = [];

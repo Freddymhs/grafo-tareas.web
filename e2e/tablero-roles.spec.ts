@@ -1,4 +1,5 @@
-import { test, expect, type Route } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { simularEspacioConMetodo, sobre } from "./api-simulada";
 
 // La API simulada (en CI no hay): dos roles, una tarea de cada uno y una FASE. Se prueba lo que decide la web —
 // las pestañas, las columnas de cada rol y que pide `?rol=` a la API—; qué nodo es de qué rol lo decide la API.
@@ -54,26 +55,12 @@ const NODOS = [
 ];
 const DE_CALIDAD = new Set(["refactor"]);
 
-const ESPACIO_CON_METODO = {
-  id: "e-sigsa",
-  nombre: "SIGSA",
-  color: null,
-  orden: 0,
-  archivado: false,
-  metodo: "trabajo-hu",
-  etapas: [],
-};
-
-const sobre = (route: Route, data: unknown) =>
-  route.fulfill({ json: { statusCode: 200, data, meta: {} } });
-
 test("el tablero tiene una pestaña por rol y cada una muestra sus columnas y sus nodos", async ({
   page,
 }) => {
   const pedidosConRol: string[] = [];
   // El tablero espera a saber qué espacio se ve (FASE 26): uno con método y sin proyectos.
-  await page.route("**/api/v1/espacios", (route) => sobre(route, [ESPACIO_CON_METODO]));
-  await page.route("**/api/v1/espacios/*/proyectos", (route) => sobre(route, []));
+  await simularEspacioConMetodo(page);
   await page.route("**/api/v1/roles", (route) => sobre(route, ROLES));
   await page.route("**/api/v1/etapas*", (route) => sobre(route, ETAPAS));
   await page.route("**/api/v1/nodos?**", (route) => {

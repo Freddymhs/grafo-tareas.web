@@ -1,4 +1,5 @@
-import { test, expect, type Route } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { simularEspacioConMetodo, sobre } from "./api-simulada";
 
 // La API simulada (en CI no hay): tres tarjetas en curso, una frenada, un trámite. Se prueba lo que decide la web —
 // el aviso de más de dos a la vez y el texto que copia el botón—; qué está en curso lo decide la API.
@@ -27,14 +28,12 @@ const DIA = {
   tramites: [nodo("f", "FASE 22: falta URL commit")],
 };
 
-const sobre = (route: Route, data: unknown) =>
-  route.fulfill({ json: { statusCode: 200, data, meta: {} } });
-
 test("El día avisa con más de dos en curso y copia el parte armado de los datos", async ({
   page,
   context,
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await simularEspacioConMetodo(page);
   await page.route("**/api/v1/derivado/dia*", (route) => sobre(route, DIA));
 
   await page.goto("/dia");

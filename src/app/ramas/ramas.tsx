@@ -5,7 +5,7 @@ import { useRamasControllerFindAll } from "@/lib/api/generado/ramas/ramas";
 import { useNodosControllerFindAll } from "@/lib/api/generado/nodos/nodos";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { useAlcance } from "@/lib/alcance/use-alcance";
-import { AVISO_SIN_METODO, LIMITE_TABLERO } from "@/lib/constants";
+import { AVISO_ESPACIOS_NO_LEIDOS, AVISO_SIN_METODO, LIMITE_TABLERO } from "@/lib/constants";
 
 const COLOR_SIN_DEFINIR = "#94a3b8";
 
@@ -23,11 +23,12 @@ function MiembrosDeRama({ ramaId }: { ramaId: string }) {
 }
 
 export function Ramas() {
-  const { conMetodo, cargando } = useAlcance();
+  const { conMetodo, cargando, fallo } = useAlcance();
   const ramas = useRamasControllerFindAll({ query: { enabled: conMetodo } });
   const [seleccionada, setSeleccionada] = useState<string | null>(null);
 
   if (cargando) return <p className="text-gray-500">Cargando…</p>;
+  if (fallo) return <p className="text-red-600">{AVISO_ESPACIOS_NO_LEIDOS}</p>;
   if (!conMetodo) return <p className="text-gray-500">{AVISO_SIN_METODO}</p>;
   if (ramas.isPending) return <p className="text-gray-500">Cargando…</p>;
   if (ramas.isError) return <p className="text-red-600">No se pudo leer la API.</p>;

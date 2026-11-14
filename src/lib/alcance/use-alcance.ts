@@ -53,7 +53,7 @@ export function useAlcance(): AlcanceActivo {
   const { espacioId, proyectoId } = resuelto.alcance;
   const params = useMemo(() => paramsDeAlcance({ espacioId, proyectoId }), [espacioId, proyectoId]);
   const { espacio, proyecto, aviso } = resuelto;
-  const conMetodo = !cargando && (!espacioId || Boolean(espacio?.metodo));
+  const conMetodo = !cargando && !sinLeer && (!espacioId || Boolean(espacio?.metodo));
 
   return {
     alcance: resuelto.alcance,

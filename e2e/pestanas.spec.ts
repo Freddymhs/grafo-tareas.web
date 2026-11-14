@@ -1,4 +1,5 @@
-import { test, expect, type Page, type Route } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+import { sobre } from "./api-simulada";
 
 // La API simulada (en CI no hay): dos espacios, uno con método de trabajo y dos proyectos, y otro sin método y con uno
 // solo. Se prueba lo que decide la web (FASE 24 y 26): las pestañas, que la URL lleve el alcance y que un espacio sin
@@ -37,9 +38,6 @@ const PROYECTOS_SIGSA = [
 const PROYECTOS_MAQ = [
   { id: "p-maq", espacioId: "e-maq", nombre: "General", color: null, orden: 0, archivado: false },
 ];
-
-const sobre = (route: Route, data: unknown) =>
-  route.fulfill({ json: { statusCode: 200, data, meta: {} } });
 
 const simularApi = (page: Page) =>
   page.route("**/api/v1/**", (route) => {
