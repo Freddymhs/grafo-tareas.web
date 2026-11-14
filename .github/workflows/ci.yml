@@ -49,6 +49,8 @@ jobs:
     needs: [ci]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: [self-hosted, mac-mini, grafo]
+    # Un deploy colgado (2026-11-14: 35 min en `load metadata`) no retiene el runner las 6 h por defecto.
+    timeout-minutes: 45
     steps:
       - name: deploy/desplegar-aqui.sh de origin/main del orquestador
         run: |
