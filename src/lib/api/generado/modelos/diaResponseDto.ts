@@ -22,6 +22,6 @@ export interface DiaResponseDto {
   detenido: DetenidoDto[];
   /** «Para decir» abiertos, con su ritual */
   paraDecir: ParaDecirDto[];
-  /** Trámites de cierre pendientes (URL commit, evidencias…) que dejó importar:fases */
+  /** Trámites de cierre pendientes (URL commit, evidencias…): los que ya existen; no se crean nuevos */
   tramites: NodoResumenDto[];
 }

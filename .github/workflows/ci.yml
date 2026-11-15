@@ -57,4 +57,5 @@ jobs:
           # Sin pipefail, si `git show` falla `bash -s` lee un script vacío y el paso sale en verde sin desplegar.
           set -o pipefail
           git -C "$HOME/apps/grafo-tareas" fetch -q origin main
-          git -C "$HOME/apps/grafo-tareas" show origin/main:deploy/desplegar-aqui.sh | bash -s
+          git -C "$HOME/apps/grafo-tareas" show origin/main:deploy/desplegar-aqui.sh \
+            | GRAFO_REPO=grafo-tareas.web GRAFO_SHA="$GITHUB_SHA" bash -s
