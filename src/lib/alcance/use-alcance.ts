@@ -17,7 +17,7 @@ export interface AlcanceActivo {
   aviso?: string;
   params: ParamsDeAlcance;
   cargando: boolean;
-  /** No se pudieron leer los espacios: sin ellos no hay alcance, y las vistas lo dicen en vez de mostrar todo mezclado. */
+  /** No se pudieron leer los espacios (o los proyectos del que se ve): sin ellos no hay alcance, y las vistas lo dicen en vez de mostrar todo mezclado. */
   fallo: boolean;
   conMetodo: boolean;
 }
@@ -43,7 +43,7 @@ export function useAlcance(): AlcanceActivo {
 
   const cargando =
     !hidratado || espacios.isPending || (Boolean(espacioVisto) && proyectos.isPending);
-  const sinLeer = hidratado && espacios.isError;
+  const sinLeer = hidratado && (espacios.isError || (Boolean(espacioVisto) && proyectos.isError));
   const resuelto = useMemo<AlcanceResuelto>(() => {
     if (sinLeer) return { alcance: {}, aviso: AVISO_ESPACIOS_NO_LEIDOS };
     if (cargando) return { alcance: pedido };

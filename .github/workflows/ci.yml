@@ -54,5 +54,7 @@ jobs:
     steps:
       - name: deploy/desplegar-aqui.sh de origin/main del orquestador
         run: |
+          # Sin pipefail, si `git show` falla `bash -s` lee un script vacío y el paso sale en verde sin desplegar.
+          set -o pipefail
           git -C "$HOME/apps/grafo-tareas" fetch -q origin main
           git -C "$HOME/apps/grafo-tareas" show origin/main:deploy/desplegar-aqui.sh | bash -s

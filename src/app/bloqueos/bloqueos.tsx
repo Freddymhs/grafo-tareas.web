@@ -5,7 +5,7 @@ import { useNodosControllerFindAll } from "@/lib/api/generado/nodos/nodos";
 import type { NodoResponseDto } from "@/lib/api/generado/modelos";
 import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { useAlcance } from "@/lib/alcance/use-alcance";
-import { LIMITE_TABLERO } from "@/lib/constants";
+import { AVISO_ESPACIOS_NO_LEIDOS, LIMITE_TABLERO } from "@/lib/constants";
 
 /** "Si X contesta, se liberan N": la API calcula `libera` para cada persona y duda abierta. */
 function Bloqueador({ nodo }: { nodo: NodoResponseDto }) {
@@ -38,8 +38,8 @@ function Bloqueador({ nodo }: { nodo: NodoResponseDto }) {
 }
 
 export function Bloqueos() {
-  const { params, cargando } = useAlcance();
-  const conAlcance = { query: { enabled: !cargando } };
+  const { params, cargando, fallo } = useAlcance();
+  const conAlcance = { query: { enabled: !cargando && !fallo } };
   const personas = useNodosControllerFindAll(
     { ...params, tipo: "PERSONA", estado: "ABIERTO", limit: LIMITE_TABLERO },
     conAlcance,
@@ -49,6 +49,7 @@ export function Bloqueos() {
     conAlcance,
   );
 
+  if (fallo) return <p className="text-red-600">{AVISO_ESPACIOS_NO_LEIDOS}</p>;
   if (personas.isPending || dudas.isPending) return <p className="text-gray-500">Cargando…</p>;
   if (personas.isError || dudas.isError)
     return <p className="text-red-600">No se pudo leer la API.</p>;
