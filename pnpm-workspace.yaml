@@ -4,3 +4,9 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - unrs-resolver
+
+# zod <4.6.6 (alta: agota memoria con entradas enormes) llegaba por @serwist/*; el override acota solo esos tres.
+overrides:
+  "@serwist/build>zod": ">=4.6.6 <5"
+  "@serwist/next>zod": ">=4.6.6 <5"
+  "@serwist/webpack-plugin>zod": ">=4.6.6 <5"
