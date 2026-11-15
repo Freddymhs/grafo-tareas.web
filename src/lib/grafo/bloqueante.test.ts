@@ -4,14 +4,14 @@ import { tiposDeBloqueante, tituloDelBloqueante } from "./bloqueante";
 
 describe("tituloDelBloqueante — la duda dice a quién espera, como las demás del grafo", () => {
   it("antepone «Para <persona>:» a la pregunta", () => {
-    expect(tituloDelBloqueante("¿quién retoma la recepción?", "Tomás Carabantes")).toBe(
-      "Para Tomás Carabantes: ¿quién retoma la recepción?",
+    expect(tituloDelBloqueante("¿quién retoma la recepción?", "Persona A")).toBe(
+      "Para Persona A: ¿quién retoma la recepción?",
     );
   });
 
   it("si la pregunta ya empieza con «Para …», no la repite", () => {
-    expect(tituloDelBloqueante("Para Thomas: ¿apruebas el esquema?", "Tomás Soto")).toBe(
-      "Para Thomas: ¿apruebas el esquema?",
+    expect(tituloDelBloqueante("Para Persona B: ¿apruebas el esquema?", "Persona B")).toBe(
+      "Para Persona B: ¿apruebas el esquema?",
     );
   });
 });

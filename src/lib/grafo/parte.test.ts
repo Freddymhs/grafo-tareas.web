@@ -34,14 +34,14 @@ describe("armarParte", () => {
           { nodo: nodo("FASE 34"), etapa: "EN CODIGO", bloqueado: false },
           { nodo: nodo("FASE 35"), etapa: "TESTEADO", bloqueado: true },
         ],
-        detenido: [{ nodo: nodo("FASE 35"), por: [nodo("¿feriados?"), nodo("Tomás")] }],
+        detenido: [{ nodo: nodo("FASE 35"), por: [nodo("¿feriados?"), nodo("Persona A")] }],
       }),
     );
     expect(texto).toBe(
       [
         "Terminé:\n- FASE 30 husky",
         "En curso:\n- FASE 34 (EN CODIGO)\n- FASE 35 (TESTEADO, frenada)",
-        "Detenido:\n- FASE 35 — espera: ¿feriados?, Tomás",
+        "Detenido:\n- FASE 35 — espera: ¿feriados?, Persona A",
       ].join("\n\n"),
     );
   });

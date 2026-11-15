@@ -45,12 +45,12 @@ describe("cierreDe — de la bitácora (lo más reciente primero), cuándo y con
   it("toma el cierre más reciente, aunque después haya otras ediciones", () => {
     const bitacora = [
       cambio("titulo", "otro título", "más claro", "2026-10-20T10:00:00.000Z"),
-      cambio("estado", CERRADO, "Thomas: «el 1 y el 2 todavía no»", "2026-10-19T15:43:00.000Z"),
+      cambio("estado", CERRADO, "Persona B: «el 1 y el 2 todavía no»", "2026-10-19T15:43:00.000Z"),
       cambio("estado", CERRADO, "un cierre anterior", "2026-10-10T09:00:00.000Z"),
     ];
     expect(cierreDe(bitacora)).toEqual({
       fecha: "2026-10-19",
-      motivo: "Thomas: «el 1 y el 2 todavía no»",
+      motivo: "Persona B: «el 1 y el 2 todavía no»",
     });
   });
 

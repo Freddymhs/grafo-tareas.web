@@ -6,7 +6,7 @@ const lista = (lineas: readonly string[]) => (lineas.length > 0 ? lineas : [SIN_
 
 /**
  * El parte del día como texto para pegar (WhatsApp, Teams…): terminé / en curso / detenido, y lo que hay para decir.
- * Es lo que pidió Fabián antes de la daily (evaluación 1). Puro: los datos son los de GET /derivado/dia.
+ * Es lo que pidió Persona F antes de la daily (evaluación 1). Puro: los datos son los de GET /derivado/dia.
  */
 export function armarParte({ terminado, enCurso, detenido, paraDecir }: DiaResponseDto): string {
   const bloques = [
