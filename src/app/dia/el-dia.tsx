@@ -7,6 +7,7 @@ import { TarjetaNodo } from "@/components/tarjeta-nodo";
 import { useAlcance } from "@/lib/alcance/use-alcance";
 import { armarParte, pasaDelLimite } from "@/lib/grafo/parte";
 import {
+  AVISO_COPIAR_FALLO,
   AVISO_ESPACIOS_NO_LEIDOS,
   AVISO_SIN_METODO,
   ESTILO_BOTON,
@@ -34,6 +35,16 @@ function Bloque({
   );
 }
 
+/** `false` si el navegador no deja escribir en el portapapeles (sin permiso, o sin HTTPS no existe `navigator.clipboard`). */
+async function copiarAlPortapapeles(texto: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(texto);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const tarjetas = (nodos: readonly NodoResumenDto[]) =>
   nodos.map((nodo) => <TarjetaNodo key={nodo.id} nodo={nodo} />);
 
@@ -46,6 +57,7 @@ export function ElDia() {
     },
   );
   const [copiado, setCopiado] = useState(false);
+  const [falloAlCopiar, setFalloAlCopiar] = useState(false);
 
   if (cargando) return <p className="text-gray-500">Cargando…</p>;
   if (fallo) return <p className="text-red-600">{AVISO_ESPACIOS_NO_LEIDOS}</p>;
@@ -56,9 +68,10 @@ export function ElDia() {
   const { enCurso, detenido, paraDecir, terminado, tramites, limiteEnCurso } = datos;
 
   const copiar = async () => {
-    await navigator.clipboard.writeText(armarParte(datos));
-    setCopiado(true);
-    setTimeout(() => setCopiado(false), MS_AVISO_COPIADO);
+    const salio = await copiarAlPortapapeles(armarParte(datos));
+    setFalloAlCopiar(!salio);
+    setCopiado(salio);
+    if (salio) setTimeout(() => setCopiado(false), MS_AVISO_COPIADO);
   };
 
   return (
@@ -69,6 +82,11 @@ export function ElDia() {
         </button>
         {copiado ? (
           <span className="text-sm text-green-700">Copiado: pegalo antes de la daily.</span>
+        ) : null}
+        {falloAlCopiar ? (
+          <span role="alert" className="text-sm text-red-600">
+            {AVISO_COPIAR_FALLO}
+          </span>
         ) : null}
       </div>
 

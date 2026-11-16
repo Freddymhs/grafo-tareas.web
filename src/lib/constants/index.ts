@@ -120,5 +120,10 @@ export const COLOR_PESTANA_INACTIVA = "transparent";
 export const NOMBRE_TIPO_OTROS = "Otros";
 export const AVISO_BUSCANDO_EN_TODO = "Buscando en todo: la búsqueda cruza todos los espacios.";
 export const AVISO_SIN_METODO = "Este espacio no usa el método de trabajo.";
+export const AVISO_PAGINAS_NO_LEIDAS =
+  "No se pudieron leer las HU: el tablero se ve sin separar por HU.";
+export const AVISO_DUDAS_NO_LEIDAS = "No se pudieron buscar dudas: los resultados no las incluyen.";
+export const AVISO_COPIAR_FALLO =
+  "No se pudo copiar el parte: el navegador no dejó usar el portapapeles.";
 export const NOMBRE_OTRO_PROYECTO = "otro proyecto";
 export const SUFIJO_ARCHIVADO = "archivado";

@@ -26,6 +26,8 @@ import { CARAS, NOMBRE_CARA } from "@/lib/grafo/mover-cara";
 import {
   API_URL,
   AVISO_BUSCANDO_EN_TODO,
+  AVISO_DUDAS_NO_LEIDAS,
+  AVISO_PAGINAS_NO_LEIDAS,
   ESTILO_CAMPO,
   LARGO_MAXIMO_BUSQUEDA,
   NOMBRE_ROL_TODO,
@@ -116,6 +118,7 @@ function TableroConMetodo() {
           </button>
         ))}
       </nav>
+      {paginas.isError ? <p className="mb-3 text-red-600">{AVISO_PAGINAS_NO_LEIDAS}</p> : null}
       <Pildoras
         etiqueta="HU"
         opciones={[
@@ -196,6 +199,9 @@ function TableroTrabajo({ libro }: { readonly libro: Libro | undefined }) {
         maxLength={LARGO_MAXIMO_BUSQUEDA}
         className={`${ESTILO_CAMPO} mb-2 w-full`}
       />
+      {conDudas && dudas.isError ? (
+        <p className="mb-1 text-sm text-red-600">{AVISO_DUDAS_NO_LEIDAS}</p>
+      ) : null}
       {buscado && alcance.espacioId ? (
         <p className="mb-1 text-sm text-gray-500">{AVISO_BUSCANDO_EN_TODO}</p>
       ) : null}
