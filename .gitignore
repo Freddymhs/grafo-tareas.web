@@ -41,3 +41,6 @@ next-env.d.ts
 
 # Serwist: el service worker se genera en el build
 public/sw*
+
+# Next lo regenera en la raíz; nadie del repo lo usa
+AGENTS.md
